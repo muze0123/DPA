@@ -1,0 +1,36 @@
+{
+  "name": "tianheng-arco-vue",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "typecheck": "vue-tsc --noEmit",
+    "verify": "vue-tsc --noEmit && node scripts/i18n.mjs check",
+    "i18n:extract": "node scripts/i18n.mjs extract",
+    "i18n:check": "node scripts/i18n.mjs check",
+    "i18n:cjk": "node scripts/i18n.mjs cjk"
+  },
+  "dependencies": {
+    "@arco-design/web-vue": "2.58.0",
+    "dayjs": "^1.11.13",
+    "echarts": "6.1.0",
+    "exceljs": "4.4.0",
+    "papaparse": "^5.7.0",
+    "pinia": "^2.3.1",
+    "vue": "3.5.44",
+    "vue-i18n": "^11.4.14",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@arco-plugins/vite-vue": "1.4.6",
+    "@types/papaparse": "^5.5.2",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "arco-cli": "1.27.5",
+    "typescript": "^5.7.2",
+    "vite": "^6.4.4",
+    "vue-tsc": "^2.2.0"
+  }
+}

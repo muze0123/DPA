@@ -1,0 +1,609 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  --app-page-gutter: 16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #app { min-width: 320px; min-height: 100%; margin: 0; }
+body {
+  /* 页面画布 = Fill-1 #F7F8FA（DESIGN.md · Colors/Neutral fills）。
+     亮色取 --mt-fill-1 常量；暗色下 --mt-fill-1 已重映射为暗色画布（--mt-d-bg-1）。 */
+  --app-page: var(--mt-fill-1);
+  --app-surface: var(--color-bg-2);
+  --app-surface-soft: var(--color-fill-2);
+  --app-divider: var(--color-border-2);
+  --app-accent: rgb(var(--primary-6));
+  color: var(--color-text-1);
+  background: var(--app-page);
+  -webkit-font-smoothing: antialiased;
+}
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 2px;
+}
+
+/* 可编辑控件表面（2026-10-26 用户裁决）：全站可编辑控件白底 + Border-3 描边，聚焦主色描边，
+   禁用态才用 Fill-2 灰底（DESIGN.md · Input「Fill is enforced globally」）。
+   此前白底规则只挂在 .app-filter-control 上，普通表单内的 Select 触发器仍是 Arco 默认灰底（Fill-2），
+   导致「输入框已是白色、下拉框仍是灰色」的反复问题。这里改为不依赖页面类的全局默认，
+   页面不得再为单个控件补白底，也不得把可编辑控件改成灰底。 */
+.arco-input-wrapper,
+.arco-textarea-wrapper,
+.arco-input-number,
+.arco-select-view,
+.arco-input-tag,
+.arco-picker {
+  background-color: var(--app-surface);
+  border-color: var(--app-control-border);
+}
+.arco-input-wrapper:hover,
+.arco-textarea-wrapper:hover,
+.arco-input-number:hover,
+.arco-select-view:hover,
+.arco-input-tag:hover,
+.arco-picker:hover,
+.arco-input-wrapper:focus-within,
+.arco-textarea-wrapper:focus-within,
+.arco-input-number:focus-within,
+.arco-select-view:focus-within,
+.arco-select-view.arco-select-view-focus,
+.arco-input-tag:focus-within,
+.arco-picker:focus-within {
+  background-color: var(--app-surface);
+  border-color: var(--app-accent);
+}
+/* 日期选择器双描边豁免（2026-10-30 用户反馈再次出现）：文本类 input 聚焦恒匹配 :focus-visible，
+   全局 2px 轮廓会叠在 picker 外框 1px 主色描边内侧形成两圈；焦点已由外框描边表达，内部轮廓豁免。 */
+.arco-picker input:focus-visible {
+  outline: none;
+}
+/* 禁用态：唯一的灰底例外，白底规则不得覆盖它 */
+.arco-input-wrapper.arco-input-disabled,
+.arco-textarea-wrapper.arco-textarea-disabled,
+.arco-input-number.arco-input-number-disabled,
+.arco-select-view.arco-select-view-disabled,
+.arco-input-tag.arco-input-tag-disabled,
+.arco-picker.arco-picker-disabled {
+  background-color: var(--color-fill-2);
+  border-color: var(--app-control-border);
+}
+
+/* 校验错误态（2026-10-26 用户裁决）：可编辑控件只把 1px 描边换成危险色，表面始终白色，
+   悬停/聚焦也一样。Arco 的底色来自 `.arco-form-item-status-error .arco-select-view:not(...)`
+   （红底 + 透明描边，按 danger-light-1/2 递进），与「可编辑控件白底」的全局规则直接冲突；
+   这里用 body 前缀把特异性抬到该规则之上，不依赖样式表加载顺序。页面不得再为错误态补底色。 */
+body .arco-form-item-status-error .arco-input-wrapper:not(.arco-input-disabled),
+body .arco-form-item-status-error .arco-input-wrapper:not(.arco-input-disabled):hover,
+body .arco-form-item-status-error .arco-input-wrapper:not(.arco-input-disabled).arco-input-focus,
+body .arco-form-item-status-error .arco-textarea-wrapper:not(.arco-textarea-disabled),
+body .arco-form-item-status-error .arco-textarea-wrapper:not(.arco-textarea-disabled):hover,
+body .arco-form-item-status-error .arco-textarea-wrapper:not(.arco-textarea-disabled).arco-textarea-focus,
+body .arco-form-item-status-error .arco-select-view:not(.arco-select-view-disabled),
+body .arco-form-item-status-error .arco-select-view:not(.arco-select-view-disabled):hover,
+body .arco-form-item-status-error .arco-select-view:not(.arco-select-view-disabled).arco-select-view-focus,
+body .arco-form-item-status-error .arco-input-tag:not(.arco-input-tag-disabled),
+body .arco-form-item-status-error .arco-input-tag:not(.arco-input-tag-disabled):hover,
+body .arco-form-item-status-error .arco-input-tag:not(.arco-input-tag-disabled).arco-input-tag-focus,
+body .arco-form-item-status-error .arco-picker:not(.arco-picker-disabled),
+body .arco-form-item-status-error .arco-picker:not(.arco-picker-disabled):hover,
+body .arco-form-item-status-error .arco-picker-focused:not(.arco-picker-disabled),
+.arco-input-wrapper.arco-input-error,
+.arco-input-wrapper.arco-input-error:hover,
+.arco-input-wrapper.arco-input-error:focus-within,
+.arco-textarea-wrapper.arco-textarea-error,
+.arco-textarea-wrapper.arco-textarea-error:hover,
+.arco-textarea-wrapper.arco-textarea-error:focus-within,
+.arco-input-number.arco-input-number-error,
+.arco-input-number.arco-input-number-error:hover,
+.arco-input-number.arco-input-number-error:focus-within,
+.arco-select-view.arco-select-view-error,
+.arco-select-view.arco-select-view-error:hover,
+.arco-select-view.arco-select-view-error:focus-within,
+.arco-select-view.arco-select-view-error.arco-select-view-focus,
+.arco-input-tag.arco-input-tag-error,
+.arco-input-tag.arco-input-tag-error:hover,
+.arco-input-tag.arco-input-tag-error:focus-within,
+.arco-picker.arco-picker-error,
+.arco-picker.arco-picker-error:hover,
+.arco-picker.arco-picker-error:focus-within {
+  border-color: rgb(var(--danger-6));
+  background-color: var(--app-surface);
+}
+
+/* 下拉弹层圆角跟随控件（2026-10-26 用户裁决：新建问卷页组件圆角统一为 2px）。
+   弹层挂在 body 上，页面 scoped 样式够不到，因此在全局收敛到 corners-1；
+   4px 的 corners-2 只保留给 Dialog / Tooltip / Alert / Popover。 */
+.arco-select-dropdown { border-radius: 2px; }
+.arco-select-dropdown .arco-select-option { border-radius: 0; }
+
+/* 下拉选项状态（2026-10-27 用户裁决）：默认白底；悬停/键盘高亮才用 Fill-2；
+   已选中项改品牌浅底 + 品牌色文字（Arco 默认把「选中 + 高亮」涂成 Fill-2 灰，
+   菜单一打开就整片灰底，与白底弹层割裂）。 */
+.arco-select-dropdown .arco-select-option { background-color: var(--app-surface); }
+.arco-select-dropdown .arco-select-option:hover,
+.arco-select-dropdown .arco-select-option-active { background-color: var(--app-surface-soft); }
+.arco-select-dropdown .arco-select-option-selected,
+.arco-select-dropdown .arco-select-option-selected:hover,
+.arco-select-dropdown .arco-select-option-selected.arco-select-option-active {
+  background-color: var(--mt-theme-1);
+  color: var(--mt-theme-6);
+  font-weight: 500;
+}
+
+/* 来源类筛选下拉弹层（2026-10-29 用户裁决）：触发器保持 200px 不加宽（DESIGN.md Filter geometry），
+   弹层不收缩到触发器宽——由页面 triggerProps（autoFitPopupWidth:false + autoFitPopupMinWidth:true
+   + 本 contentClass）配合：弹层自适应最长选项全显单行，200px 下限，max-width 兜底防溢出视口。
+   Arco 默认 autoFitPopupWidth:true 会把弹层压成触发器同宽，长选项被省略号截断——那是要修掉的偏差。 */
+.arco-trigger-content.rule-source-dropdown { max-width: min(720px, calc(100vw - 48px)); }
+.rule-source-dropdown .arco-select-option { white-space: nowrap; }
+
+/* 行操作「更多」气泡（2026-10-27 用户反馈修复）：弹层挂 body，页面 scoped 样式够不到，统一在全局收敛。
+   Arco 默认面板 padding 4px 0（左右无内边距）+ 选项 36px 高，气泡会缩成贴边的窄条、选项也不认 danger 类。 */
+.row-more-dropdown .arco-dropdown { min-width: 104px; padding: 4px; border-radius: 4px; }
+.row-more-dropdown .arco-dropdown-option {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 2px;
+  color: var(--color-text-1);
+  line-height: 20px;
+}
+.row-more-dropdown .arco-dropdown-option:not(.arco-dropdown-option-disabled):hover {
+  background: var(--color-fill-2);
+  color: var(--app-accent);
+}
+.row-more-dropdown .arco-dropdown-option.row-more-danger,
+.row-more-dropdown .arco-dropdown-option.row-more-danger:hover { color: rgb(var(--danger-6)); }
+
+/* Filter controls use the white business surface in light mode; disabled states keep Arco's neutral fill.
+   覆盖范围含日期区间选择器（.arco-picker），否则其默认 Fill-2 灰底不符合白表面规则。 */
+.app-filter-control.arco-input-wrapper,
+.app-filter-control.arco-select-view,
+.app-filter-control .arco-select-view,
+.app-filter-control.arco-picker {
+  background: var(--app-surface);
+  border-color: var(--app-control-border);
+}
+.app-filter-control.arco-input-wrapper:hover,
+.app-filter-control.arco-select-view:hover,
+.app-filter-control .arco-select-view:hover,
+.app-filter-control.arco-picker:hover,
+.app-filter-control.arco-input-wrapper:focus-within,
+.app-filter-control.arco-select-view:focus-within,
+.app-filter-control .arco-select-view:focus-within,
+.app-filter-control.arco-picker:focus-within {
+  background: var(--app-surface);
+}
+
+/* Multi-line text inputs were still rendering Arco's gray fill inside drawers and dialogs:
+   Arco's component styles ship in a lazily loaded chunk, so they are injected after this
+   file and win the equal-specificity contest. The `body` prefix lifts the documented
+   "editable controls are white" rule above them, the same way the error-state block does.
+   Disabled textareas keep the neutral gray fill. */
+body .arco-textarea-wrapper {
+  background-color: var(--app-surface);
+  border-color: var(--app-control-border);
+}
+body .arco-textarea-wrapper:hover,
+body .arco-textarea-wrapper:focus-within {
+  background-color: var(--app-surface);
+  border-color: var(--app-accent);
+}
+body .arco-textarea-wrapper.arco-textarea-disabled {
+  background-color: var(--color-fill-2);
+  border-color: var(--app-control-border);
+}
+
+/* 非强调按钮（重置、取消一类）：白色业务表面 + Border-3 #DDDDDD 描边 + 正文色，
+   悬停/点击按 outline-secondary 走主题色。Arco 默认 secondary 是 Fill-2 灰底，
+   不在 DESIGN.md 的量测矩阵内；规范的「非高亮按钮」对应 outline secondary（无填充）。
+   这里落成显式白底而不是 transparent，保证控件放在灰底画布上也仍是白色。 */
+.arco-btn.app-btn-neutral {
+  border: 1px solid var(--app-control-border);
+  color: var(--color-text-1);
+  background-color: var(--app-surface);
+}
+.arco-btn.app-btn-neutral:not(.arco-btn-disabled):hover {
+  border-color: var(--app-color-primary);
+  color: var(--app-color-primary);
+  background-color: var(--app-surface);
+}
+.arco-btn.app-btn-neutral:not(.arco-btn-disabled):active {
+  border-color: rgb(var(--primary-7));
+  color: rgb(var(--primary-7));
+  background-color: var(--app-surface);
+}
+.arco-btn.app-btn-neutral.arco-btn-disabled {
+  border-color: var(--app-control-border);
+  color: var(--color-text-4);
+  background-color: var(--color-fill-2);
+}
+
+/* 图标工具按钮（筛选设置/列设置触发器）：按 2026-10-25 裁决以 Border-3 #DDDDDD
+   作为按钮背景（token：--app-control-border，暗色随 token 重映射），
+   悬停/点击仍按 outline-secondary 走主题色描边与图标色。 */
+.arco-btn.app-icon-trigger {
+  border: 1px solid var(--app-control-border);
+  color: var(--color-text-1);
+  background-color: var(--app-control-border);
+}
+.arco-btn.app-icon-trigger:not(.arco-btn-disabled):hover,
+.arco-btn.app-icon-trigger:not(.arco-btn-disabled):active {
+  border-color: var(--app-color-primary);
+  color: var(--app-color-primary);
+  background-color: var(--app-control-border);
+}
+
+/* ---------------------------------------------------------------- 气泡提示 */
+/* DESIGN 规定气泡是白色表面 + 4px 圆角 + 二级投影，而 Arco 默认是深色气泡；
+   这里只改颜色/圆角/投影，箭头与定位仍交给组件。 */
+.arco-tooltip-content.app-tooltip-light {
+  border-radius: 4px;
+  color: var(--color-text-1);
+  background-color: var(--app-surface);
+  box-shadow: var(--app-notice-shadow);
+}
+.arco-tooltip-popup-arrow.app-tooltip-light-arrow { background-color: var(--app-surface); }
+
+/* ---------------------------------------------------------------- 对话框 */
+/* 弹窗标题按设计规范左对齐 + 16px/600/24（DESIGN.md · Typography：Card/Dialog/Drawer 标题 16px/600/24；
+   Dialog：Title alignment 左对齐），与正文、页脚同为 20px 内边距起始边；右侧保持 24px 安全距，
+   长标题不会延伸到关闭按钮下方。Arco 的 titleAlign 默认是 center、字重 500、行高 1.5715（16px→25.14px），
+   这里用三级选择器覆盖，不受样式加载顺序影响。 */
+.arco-modal .arco-modal-header .arco-modal-title {
+  justify-content: flex-start;
+  padding-right: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+/* Dialog 内边距为 20px（DESIGN.md · Dialog：Padding 20px）；Arco 页脚只留 16px 底边距，补齐 4px */
+.arco-modal .arco-modal-footer { padding-bottom: 20px; }
+
+/* ---------------------------------------------------------------- 分页控件 */
+/* 列表页脚：每页条数与跳至输入框同为白色业务表面（与筛选控件同一套表面规则），
+   翻页按钮可选时白底、禁用时 Fill-2 灰底。两块列表页共用，避免各自漂移。 */
+.app-pagination .app-page-size.arco-select-view,
+.app-pagination .app-page-size .arco-select-view {
+  flex: 0 0 132px;
+  width: 132px;
+  height: 32px;
+  border: 1px solid var(--app-control-border);
+  border-radius: 2px;
+  background-color: var(--app-surface);
+}
+.app-pagination .app-page-jump.arco-input-wrapper {
+  flex: 0 0 72px;
+  width: 72px;
+  height: 32px;
+  border: 1px solid var(--app-control-border);
+  border-radius: 2px;
+  background-color: var(--app-surface);
+}
+.app-pagination .app-page-size.arco-select-view:hover,
+.app-pagination .app-page-size .arco-select-view:hover,
+.app-pagination .app-page-jump.arco-input-wrapper:hover {
+  border-color: var(--app-control-border);
+  background-color: var(--app-surface);
+}
+.app-pagination .app-page-size.arco-select-view.arco-select-view-focus,
+.app-pagination .app-page-size .arco-select-view.arco-select-view-focus,
+.app-pagination .app-page-jump.arco-input-wrapper:focus-within {
+  border-color: var(--app-color-primary);
+  background-color: var(--app-surface);
+}
+.app-pagination .pagination-arrow,
+.app-pagination .pagination-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--app-control-border);
+  border-radius: 2px;
+  color: var(--color-text-2);
+  background-color: var(--app-surface);
+  font-size: 14px;
+  cursor: pointer;
+}
+.app-pagination .pagination-number.active {
+  border-color: var(--app-color-primary);
+  color: #FFFFFF;
+  background-color: var(--app-color-primary);
+  cursor: default;
+}
+.app-pagination .pagination-arrow:hover:not(:disabled),
+.app-pagination .pagination-number:hover:not(.active) {
+  border-color: var(--app-color-primary);
+  color: var(--app-color-primary);
+  background-color: var(--app-surface);
+}
+.app-pagination .pagination-arrow:disabled {
+  border-color: var(--app-control-border);
+  color: var(--color-text-4);
+  background-color: var(--color-fill-2);
+  cursor: not-allowed;
+}
+
+.login-page {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--app-page);
+}
+.login-brand-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 320px;
+  padding: 40px;
+  color: var(--color-white);
+  background-color: var(--app-login-bg-fill);
+  background-image: var(--app-login-bg);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.login-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 48px;
+}
+.login-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--app-radius-control);
+  background: var(--color-bg-2);
+}
+.login-brand-mark img { display: block; width: 28px; height: 24px; }
+.login-brand-content {
+  position: absolute;
+  top: 50%;
+  left: clamp(40px, 20%, 150px);
+  right: 40px;
+  transform: translateY(-50%);
+}
+.login-brand-content h2 {
+  margin: 0 0 16px;
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.login-brand-content p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.65;
+}
+.login-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 660px;
+  min-width: 0;
+  min-height: 100dvh;
+  padding: 40px 24px;
+  background: var(--color-bg-2);
+}
+.login-form-shell { width: min(100%, 400px); }
+.login-mobile-brand { display: none; }
+.login-header { margin-bottom: 40px; text-align: center; }
+.login-header h1 { margin: 0; color: var(--color-text-1); font-size: 28px; font-weight: 600; line-height: 1.3; }
+.login-alert { margin-bottom: 20px; }
+.login-form-panel .arco-form-item { margin-bottom: 24px; }
+.login-form-panel .arco-input-wrapper {
+  min-height: 52px;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--app-radius-control);
+  background: var(--color-bg-2);
+}
+.login-form-panel .arco-input-wrapper:hover { border-color: var(--color-border-4); }
+.login-form-panel .arco-input-wrapper:focus-within { border-color: rgb(var(--primary-6)); }
+.login-options { margin: 0 0 24px; }
+.login-submit { height: 52px; font-size: 16px; font-weight: 600; }
+
+.dashboard-page { min-height: calc(100dvh - 56px); padding: 16px var(--app-page-gutter); background: var(--app-page); }
+.dashboard-header { max-width: 1120px; margin: 0 auto 16px; }
+.dashboard-header h1 { margin: 0; font-size: 18px; font-weight: 600; line-height: 26px; }
+.dashboard-header p:last-child { margin: 8px 0 0; color: var(--color-text-3); }
+.default-layout { min-height: 100vh; background: var(--app-page); }
+.default-layout-header {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center;
+  gap: 20px; height: 56px; padding: 0 var(--app-page-gutter);
+  background: var(--color-bg-2);
+  box-shadow: var(--app-shadow-4);
+}
+.shell-leading { display: flex; align-items: center; flex: none; }
+.default-brand { display: inline-flex; align-items: center; gap: 8px; color: var(--color-text-1); font-size: 16px; white-space: nowrap; text-decoration: none; }
+.default-brand strong { font-weight: 600; }
+.default-brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: none; }
+.default-brand-mark img { display: block; width: 28px; height: 24px; }
+.default-module-nav {
+  display: flex; align-items: stretch; justify-content: flex-start; gap: 8px;
+  flex: 1; min-width: 0; height: 100%; overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none; overscroll-behavior-inline: contain;
+}
+.default-module-nav::-webkit-scrollbar { display: none; }
+.default-module-nav a {
+  display: inline-flex; align-items: center; gap: 7px; flex: none; height: 100%; padding: 3px 10px 0;
+  border-bottom: 3px solid transparent; color: var(--color-text-2); font-size: 14px;
+  white-space: nowrap; text-decoration: none;
+}
+.default-module-nav a:hover { color: rgb(var(--primary-6)); background: var(--color-fill-2); }
+.default-module-nav a.active { color: rgb(var(--primary-6)); border-bottom-color: rgb(var(--primary-6)); }
+.shell-actions { display: flex; align-items: center; gap: 6px; flex: none; }
+.shell-icon-button, .shell-avatar-button, .shell-dismiss {
+  display: inline-grid; place-items: center; flex: none; border: 0; border-radius: 4px;
+  color: var(--color-text-2); background: transparent; cursor: pointer;
+}
+.shell-icon-button { width: 34px; height: 34px; }
+.shell-icon-button:hover, .shell-avatar-button:hover, .shell-dismiss:hover { color: var(--color-text-1); background: var(--color-fill-2); }
+.shell-icon-button:focus-visible, .shell-avatar-button:focus-visible, .shell-dismiss:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 2px; }
+.shell-avatar-button { width: 32px; height: 32px; margin-left: 8px; border-radius: 50%; background: var(--color-fill-3); }
+.shell-notice-trigger { position: relative; }
+.shell-unread-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: rgb(var(--danger-6)); }
+.shell-task-trigger { position: relative; }
+.shell-task-badge {
+  position: absolute; top: 3px; right: 3px; min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 8px; background: rgb(var(--danger-6)); color: #fff;
+  font-size: 10px; font-weight: 600; line-height: 16px; text-align: center;
+}
+.shell-option-selected { color: rgb(var(--primary-6)); background: var(--color-primary-light-1); }
+.shell-option-check { margin-left: 20px; }
+.arco-popover-popup-content.shell-notifications-popover {
+  padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+}
+.arco-popover-popup-arrow.shell-notifications-arrow { display: none; }
+.shell-notifications {
+  display: grid; gap: 8px; width: min(316px, calc(100vw - 32px));
+  max-height: min(420px, calc(100dvh - 96px)); padding: 8px 12px 16px; overflow-y: auto;
+}
+.shell-notification {
+  position: relative; min-height: 80px; padding: 12px 14px 12px 28px;
+  border-radius: var(--app-notice-radius); background: var(--app-notice-surface);
+  box-shadow: var(--app-notice-shadow);
+}
+.shell-notification-dot { position: absolute; top: 18px; left: 14px; width: 6px; height: 6px; border-radius: 50%; background: var(--app-notice-indicator); }
+.shell-notification-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-right: 26px; }
+.shell-notification-heading strong { color: var(--app-notice-title); font-size: 14px; font-weight: 600; line-height: 20px; }
+.shell-notification-heading time { color: var(--app-notice-muted); font-size: 12px; line-height: 20px; }
+.shell-notification-body p { margin: 6px 0 0; color: var(--app-notice-copy); font-size: 13px; line-height: 20px; overflow-wrap: anywhere; }
+.shell-dismiss { position: absolute; top: 12px; right: 12px; width: 20px; height: 20px; color: var(--app-notice-muted); }
+.shell-notification-empty {
+  margin: 0; padding: 20px 12px; border-radius: var(--app-notice-radius);
+  color: var(--app-notice-copy); background: var(--app-notice-surface);
+  box-shadow: var(--app-notice-shadow); font-size: 13px;
+}
+/* ---------------------------------------------------------------- 任务列表抽屉 */
+/* 抽屉渲染在 body 直挂的 Teleport 里，scoped :deep 穿不透其根节点，
+   因此对 Arco 内部结构的覆盖统一放这里（.tc-drawer 前缀隔离）。 */
+/* 骨架：头部/Tab/筛选/说明固定，表格区独立滚动，分页位于表格右下方。 */
+/* 头部 56px + 标题 16px/600（DESIGN.md · Drawer Structure [Stated]）。 */
+.tc-drawer .arco-drawer-header { height: 56px; }
+.tc-drawer .arco-drawer-title { font-size: 16px; font-weight: 600; line-height: 24px; }
+.tc-drawer .arco-drawer-body {
+  display: flex; flex-direction: column; overflow: hidden;
+  padding: 0 20px 16px;
+}
+.tc-drawer .arco-tabs-nav { margin-bottom: 0; }
+.tc-drawer .arco-tabs-content { display: none; }
+/* 表头吸顶 + 白表头（DESIGN.md Table：#F6F7F9，随 --app-table-header 走深色主题） */
+.tc-drawer .arco-table-container { overflow: visible; }
+.tc-drawer .arco-table-th {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--app-table-header);
+}
+/* 筛选控件几何：控件统一 200px（DESIGN.md 筛选几何 [Project]） */
+.tc-drawer .tc-filter-control,
+.tc-drawer .tc-date-filter { width: 200px; }
+/* 抽屉关闭动画：方向沿用 Arco 的向右滑出（translateX 0→100%），缓动改为线性
+   （Arco 过渡类挂在面板元素 .arco-drawer 上，故用后代选择器） */
+.tc-drawer .slide-right-drawer-leave-active { transition-timing-function: linear; }
+
+/* ---------------------------------------------------------------- 功能台账抽屉 / 审计详情抽屉（同一规范） */
+/* 2026-10-25 裁决（DESIGN.md · Drawer 已同步）：抽屉整体为 Fill-1 灰画布，
+   头部/底部操作栏/内容分组卡片为白色表面；可编辑控件白底、禁用灰底由
+   global.css 的全局控件表面规则与 Arco 禁用态兜底。只读（详情/导入）抽屉
+   点遮罩即关闭，收起动画同为向右线性滑出。
+   .audit-drawer 为审计详情抽屉（只读），共用同一套表面规则。 */
+.ledger-drawer .arco-drawer, .audit-drawer .arco-drawer { background: var(--mt-fill-1); }
+.ledger-drawer .arco-drawer-header, .audit-drawer .arco-drawer-header { height: 56px; background: var(--app-surface); }
+.ledger-drawer .arco-drawer-title, .audit-drawer .arco-drawer-title { font-size: 16px; font-weight: 600; line-height: 24px; }
+.ledger-drawer .arco-drawer-footer, .audit-drawer .arco-drawer-footer { background: var(--app-surface); }
+.ledger-drawer .arco-drawer-body, .audit-drawer .arco-drawer-body {
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 16px; overflow-y: auto;
+}
+.ledger-drawer .arco-drawer .arco-input-wrapper,
+.ledger-drawer .arco-drawer .arco-select-view,
+.audit-drawer .arco-drawer .arco-input-wrapper,
+.audit-drawer .arco-drawer .arco-select-view { border: 1px solid var(--app-control-border); }
+.ledger-drawer .arco-drawer .arco-input-wrapper:focus-within,
+.ledger-drawer .arco-drawer .arco-select-view.arco-select-view-focus,
+.audit-drawer .arco-drawer .arco-input-wrapper:focus-within,
+.audit-drawer .arco-drawer .arco-select-view.arco-select-view-focus { border-color: var(--app-accent); }
+.ledger-drawer .slide-right-drawer-leave-active,
+.audit-drawer .slide-right-drawer-leave-active { transition-timing-function: linear; }
+
+/* ---------------------------------------------------------------- 详情字段列表 */
+/* 2026-10-26 裁决（DESIGN.md · Descriptions 已同步）：只读详情抽屉不再用带边框
+   描述表格，改为「标签列 + 值列」行式排布——标签 Text-2、值 Text-1，标签与值之间
+   16px，相邻字段上下间距 10px，无单元格边框；列宽随最长标签自适应、不小于 112px。
+   功能台账/审计管理详情抽屉共用，避免各自漂移。 */
+.app-detail-list { display: flex; flex-direction: column; gap: 10px; }
+.app-detail-row { display: grid; grid-template-columns: minmax(112px, max-content) minmax(0, 1fr); gap: 16px; align-items: start; }
+.app-detail-label { color: var(--color-text-2); line-height: 22px; }
+.app-detail-value { color: var(--color-text-1); line-height: 22px; overflow-wrap: anywhere; white-space: pre-line; }
+
+.default-layout-content { min-height: calc(100vh - 56px); }
+
+@media (min-width: 1400px) {
+  .shell-leading { margin-right: 28px; }
+  .default-module-nav { gap: 28px; }
+}
+
+@media (max-width: 1550px) {
+  .login-form-panel { flex-basis: 560px; }
+}
+
+@media (max-width: 1200px) {
+  .login-form-panel { flex-basis: 480px; }
+  .login-brand-content { left: 10%; }
+  .login-brand-content h2 { font-size: 34px; }
+}
+
+@media (max-width: 968px) {
+  .login-brand-panel { display: none; }
+  .login-form-panel { flex: 1; }
+  .login-mobile-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 48px;
+    color: var(--color-text-1);
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 1180px) {
+  .default-layout-header { gap: 12px; padding: 0 var(--app-page-gutter); }
+  .default-module-nav { gap: 2px; }
+  .default-module-nav a { gap: 5px; padding-inline: 8px; font-size: 13px; }
+}
+
+@media (max-width: 700px) {
+  .default-layout-header {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 8px; row-gap: 0; height: 100px; padding: 0 var(--app-page-gutter);
+  }
+  .shell-leading { grid-column: 1; grid-row: 1; height: 56px; }
+  .shell-actions { grid-column: 2; grid-row: 1; justify-self: end; height: 56px; }
+  .default-module-nav { grid-column: 1 / -1; grid-row: 2; width: 100%; height: 44px; }
+  .default-layout-content { min-height: calc(100dvh - 100px); }
+}
+
+@media (max-width: 480px) {
+  :root { --app-page-gutter: 16px; }
+  .login-form-panel { padding: 32px 16px; }
+  .login-header { margin-bottom: 28px; }
+  .login-header h1 { font-size: 24px; }
+  .login-form-panel .arco-input-wrapper { min-height: 48px; }
+  .login-submit { height: 48px; }
+  .shell-actions { gap: 2px; }
+  .shell-avatar-button { margin-left: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}

@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="presentation">
+  <defs>
+    <!-- Base field: deep navy, brand-adjacent to Theme-8 #191C71 -->
+    <linearGradient id="field" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#070F23"/>
+      <stop offset="45%"  stop-color="#0B1736"/>
+      <stop offset="100%" stop-color="#101C47"/>
+    </linearGradient>
+
+    <!-- Operations glow, anchored on the monitored vehicle -->
+    <radialGradient id="opsGlow" cx="0.78" cy="0.5" r="0.62">
+      <stop offset="0%"   stop-color="#1D4ED8" stop-opacity=".34"/>
+      <stop offset="45%"  stop-color="#122047" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#070F23" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Text scrim: guarantees headline contrast over the artwork -->
+    <linearGradient id="scrim" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"  stop-color="#060D1F" stop-opacity=".94"/>
+      <stop offset="38%" stop-color="#070F23" stop-opacity=".72"/>
+      <stop offset="68%" stop-color="#070F23" stop-opacity=".22"/>
+      <stop offset="100%" stop-color="#070F23" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Telemetry matrix -->
+    <pattern id="matrix" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.1" fill="#4D8DF8" fill-opacity=".30"/>
+    </pattern>
+
+    <!-- CSMS governance lattice -->
+    <pattern id="lattice" width="160" height="160" patternUnits="userSpaceOnUse">
+      <path d="M0 0 H160 M0 80 H160 M0 0 V160 M80 0 V160"
+            fill="none" stroke="#5C97FF" stroke-opacity=".07" stroke-width="1"/>
+    </pattern>
+
+    <linearGradient id="streamA" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#1DE4F3" stop-opacity="0"/>
+      <stop offset="50%"  stop-color="#1DE4F3" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#1DE4F3" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="streamB" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#4D8DF8" stop-opacity="0"/>
+      <stop offset="55%"  stop-color="#4D8DF8" stop-opacity=".42"/>
+      <stop offset="100%" stop-color="#4D8DF8" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="sweepEdge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#1DE4F3" stop-opacity=".34"/>
+      <stop offset="100%" stop-color="#1DE4F3" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- IDPS detection sweep -->
+    <linearGradient id="sweep" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#1DE4F3" stop-opacity=".10"/>
+      <stop offset="100%" stop-color="#1DE4F3" stop-opacity="0"/>
+    </linearGradient>
+
+    <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <filter id="softer" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+  </defs>
+
+  <!-- ===== Ground ===== -->
+  <rect width="1600" height="1000" fill="url(#field)"/>
+  <rect width="1600" height="1000" fill="url(#lattice)"/>
+  <rect width="1600" height="1000" fill="url(#matrix)" opacity=".5"/>
+  <rect width="1600" height="1000" fill="url(#opsGlow)"/>
+
+  <!-- ===== VSOC monitoring rings, centred on the vehicle ===== -->
+  <g transform="translate(1180 500)" fill="none" stroke="#5C97FF">
+    <circle r="110" stroke-opacity=".30"/>
+    <circle r="190" stroke-opacity=".22"/>
+    <circle r="275" stroke-opacity=".15"/>
+    <circle r="368" stroke-opacity=".10"/>
+    <circle r="470" stroke-opacity=".06"/>
+    <circle r="190" stroke="#1DE4F3" stroke-opacity=".30"
+            stroke-dasharray="3 13" stroke-linecap="round"/>
+    <circle r="368" stroke="#1DE4F3" stroke-opacity=".18"
+            stroke-dasharray="2 20" stroke-linecap="round"/>
+    <!-- bearing ticks -->
+    <g stroke="#9FC2FF" stroke-opacity=".26" stroke-linecap="round">
+      <path d="M0 -470 V-446"/><path d="M0 470 V446"/>
+      <path d="M-470 0 H-446"/><path d="M470 0 H446"/>
+      <path d="M332 -332 L315 -315"/><path d="M-332 332 L-315 315"/>
+      <path d="M332 332 L315 315"/><path d="M-332 -332 L-315 -315"/>
+    </g>
+    <!-- detection sweep -->
+    <path d="M0 0 L368 0 A368 368 0 0 1 256 264 Z" fill="url(#sweep)" stroke="none"/>
+    <path d="M80 0 L360 0" stroke="url(#sweepEdge)" stroke-width="1.5"/>
+  </g>
+
+  <!-- ===== Monitored vehicle ===== -->
+  <g transform="translate(1180 500) scale(1.18)">
+    <ellipse cx="0" cy="26" rx="96" ry="13" fill="#1DE4F3" opacity=".10" filter="url(#soft)"/>
+    <g fill="none" stroke="#BFD9FF" stroke-opacity=".88" stroke-width="2.4"
+       stroke-linejoin="round" stroke-linecap="round">
+      <path d="M-66 14 L-56 -12 Q-50 -22 -38 -22 L14 -22 Q28 -22 37 -11 L57 2 Q66 5 66 14 L66 21 L50 21 A11 11 0 0 0 28 21 L-16 21 A11 11 0 0 0 -38 21 L-66 21 Z"/>
+      <path d="M-44 -18 L-37 -4 L4 -4 L4 -20"/>
+      <path d="M12 -20 L12 -4 L34 -4 L22 -17"/>
+    </g>
+    <circle cx="-27" cy="21" r="11" fill="none" stroke="#BFD9FF" stroke-opacity=".88" stroke-width="2.4"/>
+    <circle cx="39"  cy="21" r="11" fill="none" stroke="#BFD9FF" stroke-opacity=".88" stroke-width="2.4"/>
+    <circle cx="-27" cy="21" r="3.4" fill="#4D8DF8" fill-opacity=".8"/>
+    <circle cx="39"  cy="21" r="3.4" fill="#4D8DF8" fill-opacity=".8"/>
+    <!-- ECU telemetry points -->
+    <g fill="#1DE4F3">
+      <circle cx="-38" cy="-8" r="2.6" opacity=".85"/>
+      <circle cx="8"   cy="-12" r="2.6" opacity=".85"/>
+      <circle cx="46"  cy="6"  r="2.6" opacity=".7"/>
+    </g>
+  </g>
+
+  <!-- ===== Fleet / ECU topology ===== -->
+  <g stroke="#5C97FF" stroke-opacity=".26" fill="none" stroke-width="1.1">
+    <path d="M1102 432 L905 262"/>
+    <path d="M1126 570 L1012 745"/>
+    <path d="M1260 428 L1447 268"/>
+    <path d="M1272 556 L1486 676"/>
+    <path d="M1162 392 L1128 180"/>
+    <path d="M1216 604 L1296 836"/>
+    <path d="M905 262 L1128 180"/>
+    <path d="M1447 268 L1486 676"/>
+    <path d="M1012 745 L1296 836"/>
+    <path d="M905 262 L1012 745" stroke-opacity=".13"/>
+  </g>
+
+  <!-- fleet nodes -->
+  <g>
+    <g fill="#4D8DF8">
+      <circle cx="905"  cy="262" r="5.5" opacity=".92"/>
+      <circle cx="1012" cy="745" r="5"   opacity=".88"/>
+      <circle cx="1447" cy="268" r="5"   opacity=".88"/>
+      <circle cx="1486" cy="676" r="4.5" opacity=".8"/>
+      <circle cx="1128" cy="180" r="4.5" opacity=".8"/>
+    </g>
+    <g fill="none" stroke="#4D8DF8" stroke-opacity=".34">
+      <circle cx="905"  cy="262" r="13"/>
+      <circle cx="1447" cy="268" r="11"/>
+      <circle cx="1012" cy="745" r="11"/>
+    </g>
+
+    <!-- one node under active detection: the only warm accent in the field -->
+    <circle cx="1296" cy="836" r="26" fill="#FF6B00" opacity=".14" filter="url(#softer)"/>
+    <circle cx="1296" cy="836" r="13" fill="none" stroke="#FF9A4D" stroke-opacity=".62" stroke-width="1.4"/>
+    <circle cx="1296" cy="836" r="5.5" fill="#FF9A4D"/>
+  </g>
+
+  <!-- ===== Data streams ===== -->
+  <g stroke-width="1.4" fill="none">
+    <path d="M470 196 H1430" stroke="url(#streamA)" opacity=".85"/>
+    <path d="M380 372 H1200" stroke="url(#streamB)" opacity=".75"/>
+    <path d="M500 638 H1530" stroke="url(#streamB)" opacity=".62"/>
+    <path d="M430 812 H1350" stroke="url(#streamA)" opacity=".5"/>
+  </g>
+
+  <!-- ===== CSMS governance marks (abstract, non-textual) ===== -->
+  <g stroke="#9FC2FF" stroke-opacity=".16" fill="none" stroke-width="1.2">
+    <path d="M128 886 h54 M128 886 v-54"/>
+    <path d="M1472 118 h-54 M1472 118 v54"/>
+  </g>
+
+  <!-- ===== Text scrim — applied last so headline contrast is guaranteed ===== -->
+  <rect width="1600" height="1000" fill="url(#scrim)"/>
+</svg>

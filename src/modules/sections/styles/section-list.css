@@ -1,0 +1,98 @@
+.section-list-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--app-divider);
+}
+
+.section-list-filter {
+  display: inline-grid;
+  grid-template-columns: max-content minmax(0, 200px);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--color-text-2);
+  font-size: 14px;
+  line-height: 22px;
+  white-space: nowrap;
+}
+
+/* 字段名不放在 `<label>` 里包裹控件：label 会把点击二次转发给控件内部的 input，
+   导致 Arco Select 收到两次 click（开→关）并触发 blur，下拉框闪现消失。
+   因此字段名用 `<label for>` + 控件 id 的兄弟结构，此选择器同时兼容两种写法。 */
+.section-list-filter > span,
+.section-list-filter > label { text-align: right; }
+.section-list-filter > label { cursor: default; }
+.section-list-filter .app-filter-control { width: 200px; max-width: 100%; min-width: 0; height: 32px; }
+.section-list-filter .arco-select-view { min-height: 32px; }
+.section-list-actions { display: flex; align-items: center; gap: 8px; }
+.section-list-actions .arco-btn { white-space: nowrap; }
+
+.section-list-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 0 12px;
+}
+.section-list-heading strong { color: var(--color-text-1); font-size: 16px; font-weight: 600; line-height: 24px; }
+/* 只作用于标题行的计数文本：必须限定直接子元素，
+   否则会命中主操作按钮内部的 `<span class="arco-btn-icon">`，把「+」染成 Text-2 灰（缺陷修复 2026-10-26）。
+   计数也可能包在 `.section-heading-main` 分组里（用于贴标题右侧，2026-10-27），两种结构同口径：Text-2 灰 / 13px。 */
+.section-list-heading > span,
+.section-list-heading .section-heading-main > span { color: var(--color-text-2); font-size: 13px; }
+
+.section-list-table .arco-table,
+.section-list-table .arco-table-container { border: 0; }
+.section-list-table .arco-table-th,
+.section-list-table .arco-table-th.arco-table-col-fixed-right {
+  height: 44px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--app-divider);
+  color: var(--color-text-1);
+  background: var(--app-surface);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  text-align: left;
+  white-space: nowrap;
+}
+.section-list-table .arco-table-td {
+  height: 52px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--app-divider);
+  background: var(--app-surface);
+  font-size: 14px;
+  line-height: 22px;
+  text-align: left;
+  white-space: nowrap;
+}
+.section-list-table .arco-table-tr:hover .arco-table-td { background: var(--color-fill-1); }
+.section-list-table .arco-table-col-fixed-right { background: var(--app-surface); }
+.section-list-table .arco-table-tr:hover .arco-table-col-fixed-right { background: linear-gradient(var(--color-fill-1), var(--color-fill-1)), var(--app-surface); }
+.section-list-table .arco-table-td:last-child .arco-btn { padding: 0; white-space: nowrap; }
+
+.section-list-primary {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  color: var(--color-text-1);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.section-list-primary:hover, .section-list-primary:focus-visible { color: var(--app-accent); }
+
+@media (max-width: 600px) {
+  .section-list-filter { grid-template-columns: max-content minmax(0, 1fr); width: 100%; }
+  .section-list-filter .app-filter-control { width: 100%; }
+}

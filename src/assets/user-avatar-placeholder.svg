@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Avatar placeholder">
+  <defs>
+    <clipPath id="avatar-clip"><circle cx="32" cy="32" r="32" /></clipPath>
+  </defs>
+  <g clip-path="url(#avatar-clip)">
+    <path fill="#DDEAF1" d="M0 0h64v64H0z" />
+    <path fill="#415D72" d="M8 64c1-15 10-23 24-23s23 8 24 23H8z" />
+    <path fill="#E6B899" d="M27 37h10v12H27z" />
+    <ellipse cx="32" cy="25" rx="13" ry="16" fill="#ECC8AA" />
+    <path fill="#394554" d="M19 27c-1-14 6-21 18-19 8 1 12 7 9 19-2-5-4-9-7-11-5 4-11 5-19 5l-1 6z" />
+    <path fill="#F2D6BB" d="M27 47c3 3 7 3 10 0l-5 9-5-9z" />
+    <path fill="#587A91" d="M8 64c1-12 7-18 17-21l7 13 7-13c10 3 16 9 17 21H8z" />
+  </g>
+</svg>

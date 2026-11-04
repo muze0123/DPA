@@ -1,0 +1,89 @@
+# ============================================================
+# 不上传到 GitHub 的内容（Vue 3 + Vite + TypeScript + pnpm）
+#
+# 原则：只忽略「可重新生成」「本地环境」「含敏感信息」的文件。
+# 必须提交：src/、tests/、scripts/、PRD/、设计文档、
+#           package.json、pnpm-lock.yaml、pnpm-workspace.yaml、
+#           index.html、vite.config.ts、tsconfig.json、.gitignore
+# 注意：src/assets/ 下的 .svg / .png 是项目静态资源，不可忽略。
+# ============================================================
+
+# --- 依赖与包管理器缓存（可由 pnpm install 重建） ---
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/cache/
+.pnp.*
+
+# --- 项目建设文档PRD ---
+PRD/
+
+# --- 构建产物（npm run build / vite 生成，可由源码重建） ---
+dist/
+build/
+out/
+.vite/
+.vite-temp/
+*.tsbuildinfo
+
+# --- 检查报告与覆盖率（脚本自动生成） ---
+i18n-report/
+coverage/
+.nyc_output/
+
+# --- 环境变量与密钥（含敏感信息，绝不上传） ---
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.p12
+*.local
+*.local.*
+
+# --- 日志与调试输出 ---
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- 编辑器 / IDE 本地配置（个人习惯，不共享） ---
+.vscode/
+.idea/
+.fleet/
+*.code-workspace
+*.swp
+*.swo
+*~
+
+# --- 操作系统生成文件 ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# --- 测试与验证副产物（Playwright / 截图 / 录屏 / trace） ---
+test-results/
+playwright-report/
+blob-report/
+shots/
+screenshots/
+trace.zip
+*.webm
+
+# --- 本地工具数据（AI 助手会话记忆、应用卡，非项目源码） ---
+# 若团队需要共享其中的配置，删除以下两行即可。
+.workbuddy/
+*.genie
+
+# --- 临时文件与备份 ---
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig

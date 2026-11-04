@@ -1,0 +1,130 @@
+/* =============================================================================
+   分区管理 · 表单版本子页面共用骨架（新建 / 编辑 / 预览）
+   -----------------------------------------------------------------------------
+   六个分区（基础信息、告知与同意、数据传输、传感器、生物特征与口令、匿名化）的
+   表单版本页共用同一套几何，避免各写一套导致同屏不一致。
+   参考：DESIGN.md（圆角 corners-1=2px、间距 4px 基数、字号 16/600/24 与 14/400/22、
+   Text-1/2/3 语义色、Level-4 阴影仅用于常驻置顶栏）。
+   ============================================================================= */
+
+:root {
+  /* 版本信息组件统一宽度（2026-10-27 用户裁决） */
+  --version-meta-width: 500px;
+}
+
+.version-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  min-height: calc(100dvh - 88px);
+  color: var(--color-text-1);
+}
+
+.version-panel {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 2px;
+  background: var(--app-surface);
+}
+
+/* 区块标题行：标题在左，「共 n 个字段」紧跟标题右侧，次级操作靠右 */
+.version-panel-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 8px;
+  margin-bottom: 12px;
+}
+.version-panel-heading h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+.version-count {
+  color: var(--color-text-2);
+  font-size: 13px;
+  line-height: 20px;
+}
+.version-panel-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  color: var(--color-text-2);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.version-note {
+  margin: 0 0 16px;
+  color: var(--color-text-2);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+/* 小徽标：控件类型、必填规则、驱动条款数量等 */
+.version-badge {
+  padding: 0 6px;
+  border-radius: 2px;
+  color: var(--color-text-2);
+  background: var(--color-fill-2);
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+/* 错误汇总：与校验结果联动，可点击定位 */
+.version-errors {
+  margin-bottom: 16px;
+  padding: 12px;
+  color: var(--app-color-danger);
+  background: var(--mt-error-bg);
+  font-size: 13px;
+  line-height: 20px;
+}
+.version-errors p { margin: 0; font-weight: 600; }
+.version-errors ul { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 0; padding: 0; list-style: none; }
+.version-error-link {
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: none;
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.version-error-link:hover { text-decoration: none; }
+.version-error-link:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 2px; }
+
+/* 空态：沿用列表页口径（20px/400/28、Text-3）。本文件为全局样式，不能用 :deep() */
+.version-state { display: flex; flex-direction: column; gap: 16px; padding: 32px 16px; border-radius: 2px; background: var(--app-surface); }
+.version-state .arco-empty-description { color: var(--color-text-3); font-size: 20px; font-weight: 400; line-height: 28px; }
+.version-state-action { display: flex; justify-content: center; gap: 8px; }
+
+/* ---------------- 预览抽屉（Teleport 到 body，必须写在非 scoped 样式里） -------- */
+.version-preview-drawer .arco-drawer { background: var(--mt-fill-1); }
+.version-preview-drawer .arco-drawer-header { height: 56px; background: var(--app-surface); }
+.version-preview-drawer .arco-drawer-title { font-size: 16px; font-weight: 600; line-height: 24px; }
+.version-preview-drawer .arco-drawer-body { display: flex; flex-direction: column; gap: 16px; padding: 16px; overflow-y: auto; }
+.version-preview-drawer .slide-right-drawer-leave-active { transition-timing-function: linear; }
+.version-preview-drawer .arco-drawer-body > .version-preview { padding: 16px; border-radius: 2px; background: var(--app-surface); }
+
+.version-preview-empty { margin: 0; color: var(--color-text-3); font-size: 14px; line-height: 22px; }
+.version-preview-list { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.version-preview-item { padding: 12px 0 0; border-top: 1px solid var(--app-divider); }
+.version-preview-item:first-child { padding-top: 0; border-top: 0; }
+.version-preview-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-bottom: 8px; }
+.version-preview-head strong { font-size: 14px; font-weight: 600; line-height: 22px; }
+.version-preview-badges { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+.version-preview-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; margin: 0; }
+.version-preview-facts dt { color: var(--color-text-2); font-size: 12px; line-height: 20px; }
+.version-preview-facts dd { margin: 0; font-size: 14px; line-height: 22px; overflow-wrap: anywhere; }
+.version-preview-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+@media (max-width: 620px) {
+  .version-preview-facts { grid-template-columns: minmax(0, 1fr); }
+  .version-panel-tools { width: 100%; margin-left: 0; }
+}
