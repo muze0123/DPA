@@ -696,7 +696,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', onResize));
 </template>
 
 <style scoped>
-.standard-page { display: flex; flex-direction: column; gap: 16px; min-width: 0; min-height: calc(100dvh - 88px); color: var(--color-text-1); font-size: 14px; }
+.standard-page { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: calc(100dvh - 88px); color: var(--color-text-1); font-size: 14px; }
 /* 顶部筛选区块：与「基础信息」页同一张白面板口径 */
 .standard-top-panel { min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
 .standard-list-panel { flex: 1; min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }

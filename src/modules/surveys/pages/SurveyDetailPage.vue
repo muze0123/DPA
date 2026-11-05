@@ -478,7 +478,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.survey-detail { min-width: 0; min-height: calc(100dvh - 88px); display: flex; flex-direction: column; gap: 16px; color: var(--color-text-1); font-size: 14px; }
+.survey-detail { min-width: 0; min-height: calc(100dvh - 88px); display: flex; flex-direction: column; gap: 12px; color: var(--color-text-1); font-size: 14px; }
 
 /* 面包屑条：与新建问卷页同构（sticky 贴住 56px 壳子导航下缘）；
    吸附（页面已滚动）时按 DESIGN.md Level 4 出底部投影，未滚动不带阴影 */

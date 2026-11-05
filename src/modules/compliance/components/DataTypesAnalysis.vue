@@ -411,7 +411,7 @@ function untypedClauseText(no: string): string {
 </template>
 
 <style scoped>
-.dt-root { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.dt-root { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .dt-panel { min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
 .dt-list-panel { flex: 1; }
 

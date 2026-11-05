@@ -361,14 +361,14 @@ function downloadErrorData(task: ImportTaskRecord) {
 
 /* 筛选区（DESIGN.md Filter strip packing「栅栏」）：标签+控件单元 hug 内容排布，
    单元 inline-grid（max-content 标签 + 200px 控件，8px 内距），单元间统一 16px；
-   标签右对齐、Text-2；查询/重置紧随最后一个单元（同 16px 间距） */
+   标签右对齐、Text-2；查询/重置紧随最后一个单元（同 16px 间距）。
+   无下沿分割线（2026-11-05 用户裁决）。 */
 .tc-filters {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
   gap: 16px;
   padding: 16px 0 12px;
-  border-bottom: 1px solid var(--app-divider);
   overflow: hidden;
 }
 

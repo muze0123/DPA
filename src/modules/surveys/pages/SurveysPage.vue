@@ -452,8 +452,28 @@ onMounted(async () => {
 
 <template>
   <main class="surveys-page">
-    <!-- 顶部筛选卡：独立白卡承载草稿条件，点「查询」应用，「重置」恢复默认 -->
+    <!-- 顶部筛选卡（2026-11-05 裁决）：页签（与当前账号的关系）在上，
+         分割线隔开，筛选条件在下；点「查询」应用，「重置」恢复默认 -->
     <div class="surveys-filterbar">
+      <div class="surveys-tabs" role="tablist" :aria-label="t('surveys.views.navigation')">
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          type="button"
+          role="tab"
+          class="surveys-tab"
+          :class="{ active: activeTab === tab.key }"
+          :aria-selected="activeTab === tab.key"
+          :tabindex="activeTab === tab.key ? 0 : -1"
+          @click="selectTab(tab.key)"
+          @keydown="onTabKeydown($event, tab.key)"
+        >
+          {{ tab.label }}<span class="surveys-tab-count">({{ tab.count }})</span>
+        </button>
+      </div>
+
+      <hr class="surveys-filter-divider" />
+
       <form class="surveys-query" @submit.prevent="applyFilters">
         <label
           v-for="key in visibleFilterKeys"
@@ -583,7 +603,7 @@ onMounted(async () => {
       </form>
     </div>
 
-    <!-- 列表卡：标题行（任务列表）+ 与我关系页签/列设置 + 表格 + 分页 -->
+    <!-- 列表卡：标题行（任务列表 + 新建任务 + 列设置）+ 表格 + 分页 -->
     <section class="surveys-panel" :aria-label="t('surveys.listTitle')">
       <div class="surveys-heading">
         <h2 class="surveys-heading-title">{{ t('surveys.listTitle') }}</h2>
@@ -592,46 +612,25 @@ onMounted(async () => {
             <template #icon><IconPlus /></template>
             {{ t('surveys.actions.createTask') }}
           </a-button>
-        </div>
-      </div>
-
-      <hr class="surveys-divider" />
-
-      <!-- 与当前账号的关系页签（带任务数）+ 列设置 -->
-      <div class="surveys-tools">
-        <div class="surveys-tabs" role="tablist" :aria-label="t('surveys.views.navigation')">
-          <button
-            v-for="tab in tabs"
-            :key="tab.key"
-            type="button"
-            role="tab"
-            class="surveys-tab"
-            :class="{ active: activeTab === tab.key }"
-            :aria-selected="activeTab === tab.key"
-            :tabindex="activeTab === tab.key ? 0 : -1"
-            @click="selectTab(tab.key)"
-            @keydown="onTabKeydown($event, tab.key)"
-          >
-            {{ tab.label }}<span class="surveys-tab-count">({{ tab.count }})</span>
-          </button>
-        </div>
-        <ColumnSettingsPopover
-          v-model:visible="columnSettingsOpen"
-          :items="localizedColumns"
-          :default-items="localizedDefaultColumns"
-          :title="t('surveys.columns.settings')"
-          :list-aria-label="t('surveys.columns.list')"
-          :show-label="t('surveys.columns.show')"
-          :restore-label="t('surveys.columns.restore')"
-          @change="onColumnsChanged"
-        >
-          <a-button
-            class="app-btn-neutral column-settings-trigger"
-            :aria-label="t('surveys.columns.settings')"
+          <!-- 列设置（2026-11-05 裁决）：随新建任务右侧，与标题行同排 -->
+          <ColumnSettingsPopover
+            v-model:visible="columnSettingsOpen"
+            :items="localizedColumns"
+            :default-items="localizedDefaultColumns"
             :title="t('surveys.columns.settings')"
-            @click="columnSettingsOpen = true"
-          ><IconSettings /></a-button>
-        </ColumnSettingsPopover>
+            :list-aria-label="t('surveys.columns.list')"
+            :show-label="t('surveys.columns.show')"
+            :restore-label="t('surveys.columns.restore')"
+            @change="onColumnsChanged"
+          >
+            <a-button
+              class="app-btn-neutral column-settings-trigger"
+              :aria-label="t('surveys.columns.settings')"
+              :title="t('surveys.columns.settings')"
+              @click="columnSettingsOpen = true"
+            ><IconSettings /></a-button>
+          </ColumnSettingsPopover>
+        </div>
       </div>
 
       <!-- 列表：loading / 空态 / 排序 / 分页齐全；筛选与排序条件在翻页间保持 -->
@@ -802,6 +801,8 @@ onMounted(async () => {
 .surveys-page { min-width: 0; min-height: calc(100dvh - 88px); display: flex; flex-direction: column; gap: 12px; font-size: 14px; }
 
 .surveys-filterbar { width: 100%; min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
+/* 页签行（2026-11-05 裁决：移入筛选卡顶部）+ 分割线与筛选条件隔开 */
+.surveys-filter-divider { height: 0; margin: 12px 0 16px; border: 0; border-top: 1px solid var(--app-divider); }
 .surveys-query { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; min-width: 0; }
 .filter-field { display: inline-grid; grid-template-columns: max-content minmax(0, 200px); max-width: 100%; align-items: center; gap: 8px; min-width: 0; color: var(--color-text-2); white-space: nowrap; }
 .filter-field > span { text-align: right; }
@@ -815,20 +816,21 @@ onMounted(async () => {
 /* 列表卡：标题行 + 页签 + 表格 + 分页 */
 .surveys-panel { flex: 1; min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
 
-/* 标题行：任务列表（16px/600）靠左 */
-.surveys-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+/* 标题行：任务列表（16px/600）靠左，新建任务 + 列设置靠右（2026-11-05 裁决）；
+   标题下无分割线，与表格间留 16px 间距（2026-11-05 二轮，对齐台账 ledger-toolbar 口径） */
+.surveys-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
 .surveys-heading-title { margin: 0; color: var(--color-text-1); font-size: 16px; font-weight: 600; line-height: 24px; }
-.surveys-divider { height: 0; margin: 12px 0 16px; border: 0; border-top: 1px solid var(--app-divider); }
+.surveys-heading-actions { display: flex; align-items: center; gap: 8px; }
 
-/* 页签行：页签靠左，列设置靠右 */
-.surveys-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.surveys-tabs { display: flex; flex-wrap: wrap; }
-.surveys-tab { height: 32px; margin-left: -1px; padding: 0 16px; border: 1px solid var(--app-divider); background: var(--app-surface); color: var(--color-text-2); font-size: 14px; line-height: 30px; white-space: nowrap; cursor: pointer; }
-.surveys-tab:first-child { margin-left: 0; border-radius: 4px 0 0 4px; }
-.surveys-tab:last-child { border-radius: 0 4px 4px 0; }
+/* 页签（在筛选卡内，2026-11-05 二轮裁决：下划线式）——文字页签无边框无底色，
+   选中项主色文字 + 底部 2px 主色下划线，未选中次级灰；计数随文字同色 */
+.surveys-tabs { display: flex; flex-wrap: wrap; gap: 24px; }
+.surveys-tab { position: relative; height: 32px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--color-text-2); font: inherit; font-size: 14px; line-height: 30px; white-space: nowrap; cursor: pointer; }
 .surveys-tab:hover { color: var(--app-accent); }
-.surveys-tab.active { position: relative; z-index: 1; border-color: var(--app-accent); background: var(--color-primary-light-1); color: var(--app-accent); font-weight: 600; }
-.surveys-tab-count { margin-left: 2px; font-variant-numeric: tabular-nums; }
+.surveys-tab.active { color: var(--app-accent); font-weight: 600; }
+.surveys-tab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 1px; background: var(--app-accent); }
+.surveys-tab:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 2px; }
+.surveys-tab-count { margin-left: 2px; font-weight: 400; font-variant-numeric: tabular-nums; }
 .column-settings-trigger { width: 32px; height: 32px; padding: 0; }
 
 /* 数据列表：白底、无外框、无斑马纹、行间单线分隔（与功能台账同一套表格处理） */
@@ -848,8 +850,6 @@ onMounted(async () => {
 .overdue-tag { flex: none; cursor: default; }
 /* 任务编号：等宽数字、次级文本色（行内入口仍是任务名称） */
 .task-no-cell { color: var(--color-text-2); font-variant-numeric: tabular-nums; }
-/* 标题行右侧动作区：新建任务 */
-.surveys-heading-actions { display: flex; align-items: center; gap: 8px; }
 
 .off-ledger-tag { flex: none; cursor: default; }
 
@@ -885,7 +885,6 @@ onMounted(async () => {
 .pagination-jump-label, .pagination-total-pages { color: var(--color-text-3); font-size: 14px; line-height: 22px; }
 
 @media (max-width: 720px) {
-  .surveys-tools { align-items: flex-start; flex-direction: column; }
   .surveys-pagination { justify-content: flex-start; }
   .pagination-total { width: 100%; margin-right: 0; }
 }

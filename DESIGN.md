@@ -228,7 +228,7 @@ The current application offers light and dark, not a system-following choice. Su
 
 ### What dark mode does not change
 
-Geometry is theme-independent: control heights (40/32/24), radii (2/4/8), the default 4px sizing rhythm (with the 205px sidebar as the one explicit shell-size exception), and fixed overlay widths do not change with theme. Both updated page layouts retain a 56px header and 16px content margin; the top-side-content shell retains a 205px sidebar and 16px gap between modules. The separate Figma navigation component's 240px/64px variants are not page-shell widths.
+Geometry is theme-independent: control heights (40/32/24), radii (2/4/8), the default 4px sizing rhythm (with the 205px sidebar as the one explicit shell-size exception), and fixed overlay widths do not change with theme. Both updated page layouts retain a 56px header and 16px content margin; the top-side-content shell retains a 205px sidebar, with adjacent content modules 12px apart (2026-11-05). The separate Figma navigation component's 240px/64px variants are not page-shell widths.
 
 ### Verification required before shipping dark mode
 
@@ -320,14 +320,16 @@ Never prefill real credentials or print a password on a sign-in page. If local d
 
 **[Project] Header height revision.** The source measured the page-shell header at 55px, but the Figma navigation component's own brand row is 56px and the implemented shell renders 56px. Adopting **56px** makes the shell and the navigation component agree and keeps the height on the 4px rhythm, so no one-pixel exception is needed. Previous 55px references, including the Figure 1 / Figure 2 descriptions, are superseded; do not reintroduce 55px.
 
-This replaces Arco's own rhythm as the governing rule. The updated 16px outer margins, the 16px module gap, and the 16px panel inset are all multiples of 4 and now share one value; they remain **distinct rules** with distinct scopes. The source's 20px module-card-to-inner-content distance is superseded by the 16px panel inset — do not treat the three 16px rules as interchangeable, and do not reinstate 20px inside a panel.
+This replaces Arco's own rhythm as the governing rule. The updated 16px outer margins and the 16px panel inset are multiples of 4; the content-region module gap is now **12px** (2026-11-05 user decision, below). They remain **distinct rules** with distinct scopes. The source's 20px module-card-to-inner-content distance is superseded by the 16px panel inset — do not treat these rules as interchangeable, and do not reinstate 20px inside a panel.
+
+**[Project] Content-region module gap — 2026-11-05 user decision.** The vertical gap between adjacent content blocks in a page's content region (typically the 筛选条件 block above the 数据列表 block, and any further sibling white panels) is **12px**, replacing the earlier 16px inter-module gap. This is the content-area block spacing rule for business list pages (功能台账, 数据类型, 数据字典, 材料清单, 规则配置, 审计管理, 测试方法, 问卷工作台, and the same stack on detail/edit routes); it does not change the 16px shell gutters around the content region, the 16px panel inset, the 16px sidebar-to-content gap, or any in-panel spacing rule.
 
 ### Spacing by scope [Source + approved layout update]
 
 | Value | Meaning |
 |---|---|
 | **16px** | The outer content margin on all four sides in both updated page layouts (Figures 1 and 2) |
-| **16px** | Gap between adjacent content modules in the top-side-content layout (Figure 2) |
+| **12px** | Gap between adjacent content blocks (modules) inside the content region — e.g. 筛选条件 block to 数据列表 block (2026-11-05 user decision; was 16px) |
 | **16px** | Panel content inset — the distance from a card's or panel's edge to its content. Revised from the source's 20px together with the 16px panel-title role |
 | **12px** | Distance from a title block to the content it governs, inside a panel (see Typography · Title roles and vertical rhythm) |
 | 4px | The increment all other padding follows |
@@ -340,7 +342,7 @@ This replaces Arco's own rhythm as the governing rule. The updated 16px outer ma
 
 Figure 1 does not specify the gap between multiple modules inside this content region; do not reuse the old Figma 20px module gap as an automatic rule. Define that gap with the page's design or module PRD when multiple modules are present.
 
-**2 — Top-side-content (顶部-侧边-内容区布局, Figure 2).** The full-width **56px** header sits above the sidebar and content. Below it, the sidebar begins flush at the left edge (**margin 0px**), measures **205px wide**, and adapts its height to the available area. The content region occupies the remaining width and available height, with **16px outer margin on all four sides** between its boundary and the sidebar/header/viewport. Adjacent modules **inside the content region** have a **16px gap**. This is the baseline pattern for most back-office pages; the older 240px Figma navigation-component width does not override the 205px page-shell width.
+**2 — Top-side-content (顶部-侧边-内容区布局, Figure 2).** The full-width **56px** header sits above the sidebar and content. Below it, the sidebar begins flush at the left edge (**margin 0px**), measures **205px wide**, and adapts its height to the available area. The content region occupies the remaining width and available height, with **16px outer margin on all four sides** between its boundary and the sidebar/header/viewport. Adjacent modules **inside the content region** have a **12px gap** (2026-11-05 user decision; was 16px). This is the baseline pattern for most back-office pages; the older 240px Figma navigation-component width does not override the 205px page-shell width.
 
 ```text
 Pattern 1 — top-content (Figure 1)
@@ -350,7 +352,7 @@ Pattern 1 — top-content (Figure 1)
 Pattern 2 — top-side-content (Figure 2)
   Header 56px       [logo | L1 nav items | auxiliary menu]
   Sider 205px       [flush left and bottom, margin 0, height below header]  ⇄ 64px collapsed rail
-  Content area      [16px margin | fluid content; module gap 16px | 16px margin]
+  Content area      [16px margin | fluid content; module gap 12px | 16px margin]
 ```
 
 **Content region canvas [Project, 2026-10-24].** The system framework paints **one page background across the whole viewport**: `Fill-1 #F7F8FA` (`--app-page`; in dark mode the token remaps through Arco `--color-bg-1`), **including the 16px gutters around the content region** — no white frame remains between the shell and the content. The content region is built as an independent div **on top of this canvas**: the shell owns the 16px canvas gutters — top 16px above the content, right edge 16px, bottom 16px, and 16px between the sidebar and the content provided by the `.product-body` flex gap — and each page's root node is itself a **white business panel** (`--app-surface`, corners-1 2px radius, 16px content inset) that fills the content region (天枢 models-content 同构).
@@ -1214,9 +1216,9 @@ One page-level primary action. Use spacing before adding framed containers; neve
 
 ### Section list and child-route composition [Project, 2026-10-26]
 
-For a two-Tab section workspace such as 基础信息, the **first-level route** follows the 问卷工作台 layout: the Tab strip sits above its content, and each Tab owns two sibling `div` regions, not nested cards. The first white region contains the query form (label/control units and actions follow Filter control surface rule); the second white region contains the list heading, actions, table/empty state, and pagination. Both use a 16px inset and the approved 16px inter-module gap on the Fill-1 page canvas. Changing Tabs switches the visible panel and keeps its filters tied to that panel. The first-level list does not need a breadcrumb because the shell navigation and Tab identify it.
+For a two-Tab section workspace such as 基础信息, the **first-level route** follows the 问卷工作台 layout: the Tab strip sits above its content, and each Tab owns two sibling `div` regions, not nested cards. The first white region contains the query form (label/control units and actions follow Filter control surface rule); the second white region contains the list heading, actions, table/empty state, and pagination. Both use a 16px inset and the approved 12px inter-module gap (2026-11-05) on the Fill-1 page canvas. Changing Tabs switches the visible panel and keeps its filters tied to that panel. The first-level list does not need a breadcrumb because the shell navigation and Tab identify it.
 
-The **new / edit / detail child route** follows the 新建问卷 composition: a separate shareable Vue route, a white sticky top operation band beneath the 56px shell header with the parent link/current context and return plus save/other permitted actions; below it, separate white content groups with 16px insets and 16px gaps. Keep the object identifier, current status, and material context visible. For a read-only detail, use Descriptions rather than disabled input controls. A new/edit page protects unsaved changes on route exit and browser close; save errors retain user input, and preview must not masquerade as publication or confirmed backend data. This composition does not require a second application shell or apply to every business route.
+The **new / edit / detail child route** follows the 新建问卷 composition: a separate shareable Vue route, a white sticky top operation band beneath the 56px shell header with the parent link/current context and return plus save/other permitted actions; below it, separate white content groups with 16px insets and 12px gaps (2026-11-05). Keep the object identifier, current status, and material context visible. For a read-only detail, use Descriptions rather than disabled input controls. A new/edit page protects unsaved changes on route exit and browser close; save errors retain user input, and preview must not masquerade as publication or confirmed backend data. This composition does not require a second application shell or apply to every business route.
 
 ### Rule version config composition [Project, 2026-11-01 user decision]
 

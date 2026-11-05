@@ -1295,7 +1295,7 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
 
 <style scoped>
 /* 页面骨架：Fill-1 画布上的白色面板列（与规则列表页同构，16px 纵向间距） */
-.rule-page { display: flex; flex-direction: column; gap: 16px; min-width: 0; min-height: calc(100dvh - 88px); font-size: 14px; color: var(--color-text-1); }
+.rule-page { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: calc(100dvh - 88px); font-size: 14px; color: var(--color-text-1); }
 .rule-panel { min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
 
 /* 顶部吸顶操作条：左面包屑、右操作；吸顶时用 Level-4 阴影分层（与 VersionPageHeader 同构） */

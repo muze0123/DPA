@@ -77,7 +77,7 @@ function openClause(no: string) {
 
 <style scoped>
 /* 页面根：Fill-1 画布上的白色面板列（与列表页同一口径） */
-.dt-page { display: flex; flex-direction: column; gap: 16px; min-width: 0; min-height: calc(100dvh - 88px); font-size: 14px; color: var(--color-text-1); }
+.dt-page { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: calc(100dvh - 88px); font-size: 14px; color: var(--color-text-1); }
 .dt-filter-panel { min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
 
 /* 筛选条：标签右对齐 + 200px 控件单元，单元内 8px、单元间 16px */

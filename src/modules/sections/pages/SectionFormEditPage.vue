@@ -661,7 +661,7 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm(t('sectionForms.editor.d
 </template>
 
 <style scoped>
-.form-edit-page { display: flex; flex-direction: column; gap: 16px; min-width: 0; min-height: calc(100dvh - 88px); color: var(--color-text-1); }
+.form-edit-page { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: calc(100dvh - 88px); color: var(--color-text-1); }
 
 /* 吸顶顶栏：面包屑在左、操作在右（2026-10-31 用户裁决：单页两区块，页签取消），1px 底描边分隔内容区 */
 .form-edit-header {

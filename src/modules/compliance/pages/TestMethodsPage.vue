@@ -260,7 +260,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', scheduleMeasure));
 
 <style scoped>
 /* 页面根：Fill-1 画布上的单块白面板（DESIGN.md · Application shell 列表页构图） */
-.tm-page { display: flex; flex-direction: column; gap: 16px; min-width: 0; min-height: calc(100dvh - 88px); color: var(--color-text-1); font-size: 14px; }
+.tm-page { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: calc(100dvh - 88px); color: var(--color-text-1); font-size: 14px; }
 .tm-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
 
 /* 列表头：标题 16/600/24 + 条数贴右侧（baseline 对齐）+ 右侧操作 */

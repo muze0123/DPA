@@ -617,7 +617,16 @@ async function confirmExport() {
 
 <template>
   <div class="ledger-page">
+    <!-- 筛选卡（2026-11-05 裁决，与工作台一致）：状态页签在上，分割线隔开，筛选条件在下 -->
     <div class="ledger-filter-panel">
+      <div class="ledger-status-tabs" role="tablist" :aria-label="t('ledger.filters.status')">
+        <button v-for="tab in statusTabs" :key="tab.key || 'all'" type="button" role="tab" class="ledger-status-tab" :class="{ active: activeStatus === tab.key }" :aria-selected="activeStatus === tab.key" :tabindex="activeStatus === tab.key ? 0 : -1" @click="selectStatusTab(tab.key)">
+          {{ tab.label }}<span class="ledger-status-count">({{ tab.count }})</span>
+        </button>
+      </div>
+
+      <hr class="ledger-filter-divider" />
+
       <form class="ledger-filters" @submit.prevent="applyFilters">
         <div v-for="key in visibleFilterKeys" :key="key" class="ledger-filter-field">
           <label :for="`ledger-filter-${key}`">{{ t(`ledger.filters.${key}`) }}</label>
@@ -648,20 +657,13 @@ async function confirmExport() {
           <a-button class="app-btn-neutral" @click="requestExport"><template #icon><IconDownload /></template>{{ t('ledger.actions.export') }}</a-button>
           <a-button class="app-btn-neutral" @click="openImport"><template #icon><IconUpload /></template>{{ t('ledger.actions.import') }}</a-button>
           <a-button type="primary" @click="openDrawer('add')"><template #icon><IconPlus /></template>{{ t('ledger.actions.add') }}</a-button>
+          <ColumnSettingsPopover v-model:visible="columnSettingsOpen" :items="localizedColumns" :default-items="localizedDefaultColumns" :title="t('ledger.columns.settings')" :list-aria-label="t('ledger.columns.list')" :show-label="t('ledger.columns.show')" :restore-label="t('ledger.columns.restore')" @change="onColumnsChanged">
+            <a-tooltip :content="t('ledger.columns.settings')"><a-button class="app-btn-neutral ledger-icon-button" :aria-label="t('ledger.columns.settings')"><IconSettings /></a-button></a-tooltip>
+          </ColumnSettingsPopover>
         </div>
       </div>
 
-      <div class="ledger-table-tools">
-        <div class="ledger-status-tabs" role="group" :aria-label="t('ledger.filters.status')">
-          <button v-for="tab in statusTabs" :key="tab.key" type="button" class="ledger-status-tab" :class="{ active: activeStatus === tab.key }" :aria-pressed="activeStatus === tab.key" @click="selectStatusTab(tab.key)">
-            {{ tab.label }}<span class="ledger-status-count">({{ tab.count }})</span>
-          </button>
-        </div>
-        <span class="ledger-sr-only" role="status">{{ t('ledger.table.count', { count: filtered.length }) }}</span>
-        <ColumnSettingsPopover v-model:visible="columnSettingsOpen" :items="localizedColumns" :default-items="localizedDefaultColumns" :title="t('ledger.columns.settings')" :list-aria-label="t('ledger.columns.list')" :show-label="t('ledger.columns.show')" :restore-label="t('ledger.columns.restore')" @change="onColumnsChanged">
-          <a-tooltip :content="t('ledger.columns.settings')"><a-button class="app-btn-neutral ledger-icon-button" :aria-label="t('ledger.columns.settings')"><IconSettings /></a-button></a-tooltip>
-        </ColumnSettingsPopover>
-      </div>
+      <span class="ledger-sr-only" role="status">{{ t('ledger.table.count', { count: filtered.length }) }}</span>
 
       <div v-if="loadError" class="ledger-load-error" role="alert">{{ t('ledger.table.error') }} <a-button type="text" @click="reload">{{ t('ledger.table.retry') }}</a-button></div>
       <a-table v-else :columns="tableColumns" :data="paged" row-key="id" :pagination="false" :bordered="false" :stripe="false" :loading="loading" :scroll="{ x: horizontalWidth }" class="ledger-table" @sorter-change="handleSort">
@@ -885,11 +887,11 @@ async function confirmExport() {
 </template>
 
 <style scoped>
-.ledger-page { display: flex; flex-direction: column; gap: 16px; min-width: 0; min-height: calc(100dvh - 88px); font-size: 14px; }
+.ledger-page { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: calc(100dvh - 88px); font-size: 14px; }
 .ledger-filter-panel { min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
 .ledger-list { flex: 1; min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
-.ledger-toolbar, .ledger-toolbar-actions, .ledger-table-tools, .ledger-row-actions { display: flex; align-items: center; gap: 12px; }
-.ledger-toolbar { justify-content: space-between; flex-wrap: wrap; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--app-divider); }
+.ledger-toolbar, .ledger-toolbar-actions, .ledger-row-actions { display: flex; align-items: center; gap: 12px; }
+.ledger-toolbar { justify-content: space-between; flex-wrap: wrap; margin-bottom: 16px; }
 .ledger-toolbar-title { margin: 0; font-size: 16px; font-weight: 600; line-height: 24px; }
 .ledger-toolbar-actions { flex-wrap: wrap; }
 
@@ -904,14 +906,16 @@ async function confirmExport() {
 .ledger-filter-actions { display: flex; align-items: center; gap: 8px; }
 .ledger-icon-button { display: inline-grid; width: 32px; height: 32px; padding: 0; place-items: center; }
 
-.ledger-table-tools { justify-content: space-between; min-width: 0; margin-bottom: 16px; }
-.ledger-status-tabs { display: flex; flex: 1; min-width: 0; overflow-x: auto; }
-.ledger-status-tab { flex: none; height: 32px; margin-left: -1px; padding: 0 16px; border: 1px solid var(--app-divider); background: var(--app-surface); color: var(--color-text-2); font: inherit; white-space: nowrap; cursor: pointer; }
-.ledger-status-tab:first-child { margin-left: 0; border-radius: 4px 0 0 4px; }
-.ledger-status-tab:last-child { border-radius: 0 4px 4px 0; }
+/* 状态页签（2026-11-05 由列表工具条移入筛选面板顶部，与工作台同形态）：
+   下划线式文字页签（二轮裁决）——无边框无底色，选中项主色文字 + 底部 2px 主色下划线 */
+.ledger-status-tabs { display: flex; flex-wrap: wrap; gap: 24px; }
+.ledger-status-tab { position: relative; height: 32px; margin-left: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--color-text-2); font: inherit; line-height: 30px; white-space: nowrap; cursor: pointer; }
 .ledger-status-tab:hover { color: var(--app-accent); }
-.ledger-status-tab.active { position: relative; z-index: 1; border-color: var(--app-accent); background: var(--color-primary-light-1); color: var(--app-accent); font-weight: 600; }
-.ledger-status-count { margin-left: 2px; font-variant-numeric: tabular-nums; }
+.ledger-status-tab.active { color: var(--app-accent); font-weight: 600; }
+.ledger-status-tab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 1px; background: var(--app-accent); }
+.ledger-status-tab:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 2px; }
+.ledger-status-count { margin-left: 2px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.ledger-filter-divider { height: 0; margin: 12px 0 16px; border: 0; border-top: 1px solid var(--app-divider); }
 .ledger-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 .ledger-table { min-width: 0; }
 .ledger-table :deep(.arco-table-th) { font-weight: 600; }

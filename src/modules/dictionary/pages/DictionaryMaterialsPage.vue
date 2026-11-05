@@ -615,7 +615,7 @@ async function confirmExport() {
 </template>
 
 <style scoped>
-.library-page { display: flex; flex-direction: column; gap: 16px; min-width: 0; min-height: calc(100dvh - 88px); color: var(--color-text-1); font-size: 14px; }
+.library-page { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: calc(100dvh - 88px); color: var(--color-text-1); font-size: 14px; }
 .library-filter-panel, .library-list-panel { min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
 .library-list-panel { flex: 1; }
 /* 内容区不放页面标题；二级菜单即视图开关（2026-11-01 第二轮：去掉顶部页签），

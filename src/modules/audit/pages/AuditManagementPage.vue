@@ -511,7 +511,7 @@ async function confirmExport() {
 <style scoped>
 /* 与功能台账同构（DESIGN.md · Pattern 2 模块拆分）：页根为 Fill-1 画布，
    筛选面板与数据列表为两个独立白色业务面板（--app-surface），模块间距 16px */
-.audit-page { display: flex; flex-direction: column; gap: 16px; min-width: 0; min-height: calc(100dvh - 88px); font-size: 14px; }
+.audit-page { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: calc(100dvh - 88px); font-size: 14px; }
 
 /* 筛选面板：字段与操作组在同一换行容器，操作组紧跟最后一个筛选条件（单元间距统一 16px，同台账 2026-10-25 裁决） */
 .audit-filter-panel { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
