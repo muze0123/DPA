@@ -1,0 +1,10 @@
+{
+  "project": "功能数据安全合规自评",
+  "brand": "blue",
+  "editableLabelColon": true,
+  "filterLabelColon": false,
+  "detailLabelColon": false,
+  "source": "DESIGN.md",
+  "sourceStatus": "existing-approved-project-specification",
+  "darkStatus": "project-extension"
+}

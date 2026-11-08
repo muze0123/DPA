@@ -33,6 +33,7 @@ import {
   type SurveyTemplate, type TemplateInput, type TemplateQuestion, type TemplateStatus,
 } from '../data/templates';
 import type { WorkbookLabels } from '../data/workbook';
+import { fieldLabel } from '../../../shared/fieldLabel';
 
 const { t } = useI18n({ useScope: 'global' });
 const router = useRouter();
@@ -940,10 +941,10 @@ onMounted(async () => {
         <a-form class="template-form" :model="form" layout="vertical" @submit.prevent>
           <div class="ledger-drawer-group">
             <h2 class="drawer-section-heading">{{ t('templates.drawer.basics') }}</h2>
-            <a-form-item :label="t('templates.fields.name')" required>
+            <a-form-item :label="fieldLabel(t('templates.fields.name'))" required>
               <a-input v-model="form.name" :placeholder="t('templates.form.namePlaceholder')" :max-length="50" show-word-limit />
             </a-form-item>
-            <a-form-item :label="t('templates.fields.note')">
+            <a-form-item :label="fieldLabel(t('templates.fields.note'))">
               <a-textarea v-model="form.note" :max-length="200" show-word-limit :auto-size="{ minRows: 2, maxRows: 4 }" :placeholder="t('templates.form.notePlaceholder')" />
             </a-form-item>
           </div>
@@ -1163,7 +1164,7 @@ onMounted(async () => {
 .template-import-hint, .template-import-file-name { max-width: 100%; margin: 0; color: var(--color-text-1); line-height: 24px; overflow-wrap: anywhere; }
 .template-import-file-name { font-size: 18px; }
 .template-import-input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
-.template-import-notes { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 2px; background: #F8FBFF; }
+.template-import-notes { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 2px; background: var(--app-import-help-surface); }
 .template-import-notes-title { margin: 0; font-weight: 600; line-height: 22px; }
 .template-import-note { margin: 0; color: var(--color-text-2); line-height: 22px; }
 .template-import-template { align-self: flex-start; }

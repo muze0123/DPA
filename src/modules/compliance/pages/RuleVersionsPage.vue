@@ -811,8 +811,8 @@ async function confirmImport() {
 .rule-import-hint, .rule-import-file-name { max-width: 100%; margin: 0; color: var(--color-text-1); line-height: 24px; overflow-wrap: anywhere; }
 .rule-import-file-name { font-size: 18px; }
 .rule-import-line { margin: 0; line-height: 22px; }
-/* 注意事项子块：#F8FBFF 浅蓝底（business-drawer baseline），16px 内边距；下载模版链接位于子块之外 */
-.rule-import-notes { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 2px; background: #F8FBFF; }
+/* 注意事项子块：var(--app-import-help-surface) 浅蓝底（business-drawer baseline），16px 内边距；下载模版链接位于子块之外 */
+.rule-import-notes { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 2px; background: var(--app-import-help-surface); }
 :global(body[arco-theme='dark'] .rule-import-notes) { background: var(--color-fill-2); }
 .rule-import-notes-title { margin: 0; font-weight: 600; line-height: 22px; }
 .rule-import-note { margin: 0; color: var(--color-text-2); line-height: 22px; }

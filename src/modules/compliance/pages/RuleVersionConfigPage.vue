@@ -922,7 +922,7 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
         </div>
         <div class="cfg-basics-grid">
           <div class="cfg-field">
-            <label for="rule-config-no"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.ruleNo') }}</label>
+            <label class="app-field-label" for="rule-config-no"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.ruleNo') }}</label>
             <a-input id="rule-config-no" v-model="basic.ruleNo" class="cfg-control" :disabled="!ruleNoEditable"
               :max-length="50" show-word-limit :input-attrs="{ maxlength: 50 }"
               :placeholder="t('compliance.versions.ruleNoPlaceholder')" :aria-invalid="submitted && Boolean(basicFieldIssues.ruleNo)" />
@@ -930,14 +930,14 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
             <p v-if="submitted && basicFieldIssues.ruleNo" class="cfg-issue-text" role="alert">{{ basicFieldIssues.ruleNo }}</p>
           </div>
           <div class="cfg-field">
-            <label for="rule-config-name"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.name') }}</label>
+            <label class="app-field-label" for="rule-config-name"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.name') }}</label>
             <a-input id="rule-config-name" v-model="basic.name" class="cfg-control"
               :max-length="50" show-word-limit :input-attrs="{ maxlength: 50 }"
               :placeholder="t('compliance.versions.namePlaceholder')" :aria-invalid="submitted && Boolean(basicFieldIssues.name)" />
             <p v-if="submitted && basicFieldIssues.name" class="cfg-issue-text" role="alert">{{ basicFieldIssues.name }}</p>
           </div>
           <div class="cfg-field">
-            <label for="rule-config-standard"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.standardSource') }}</label>
+            <label class="app-field-label" for="rule-config-standard"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.standardSource') }}</label>
             <a-select id="rule-config-standard" :model-value="basic.standardSource" class="cfg-control" allow-search allow-create allow-clear
               :placeholder="t('compliance.versions.standardSourcePlaceholder')" :options="standardOptions"
               :aria-invalid="submitted && Boolean(basicFieldIssues.standardSource)"
@@ -945,7 +945,7 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
             <p v-if="submitted && basicFieldIssues.standardSource" class="cfg-issue-text" role="alert">{{ basicFieldIssues.standardSource }}</p>
           </div>
           <div class="cfg-field">
-            <label for="rule-config-question-source"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.questionSource') }}</label>
+            <label class="app-field-label" for="rule-config-question-source"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.questionSource') }}</label>
             <a-select id="rule-config-question-source" :model-value="basic.questionSource" class="cfg-control" allow-search allow-create allow-clear
               :placeholder="t('compliance.versions.questionSourcePlaceholder')" :options="questionSourceOptions"
               :aria-invalid="submitted && Boolean(basicFieldIssues.questionSource)"
@@ -953,7 +953,7 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
             <p v-if="submitted && basicFieldIssues.questionSource" class="cfg-issue-text" role="alert">{{ basicFieldIssues.questionSource }}</p>
           </div>
           <div class="cfg-field">
-            <label for="rule-config-safety"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.safetyRequirement') }}</label>
+            <label class="app-field-label" for="rule-config-safety"><span class="cfg-required" aria-hidden="true">*</span>{{ t('compliance.versions.safetyRequirement') }}</label>
             <a-select id="rule-config-safety" :model-value="basic.safetyRequirement" class="cfg-control" allow-search allow-create allow-clear
               :placeholder="t('compliance.versions.safetyRequirementPlaceholder')" :options="safetyRequirementSelectOptions"
               :aria-invalid="submitted && Boolean(basicFieldIssues.safetyRequirement)"
@@ -961,7 +961,7 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
             <p v-if="submitted && basicFieldIssues.safetyRequirement" class="cfg-issue-text" role="alert">{{ basicFieldIssues.safetyRequirement }}</p>
           </div>
           <div class="cfg-field">
-            <label for="rule-config-note">{{ t('compliance.versions.note') }}</label>
+            <label class="app-field-label" for="rule-config-note">{{ t('compliance.versions.note') }}</label>
             <a-textarea id="rule-config-note" v-model="basic.note" :max-length="100" show-word-limit
               :auto-size="{ minRows: 2, maxRows: 4 }" :placeholder="t('compliance.versions.notePlaceholder')" />
           </div>
@@ -1308,7 +1308,7 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
 .cfg-crumb-sep { color: var(--color-text-3); }
 .cfg-crumb-current { color: var(--color-text-1); font-weight: 600; }
 .cfg-crumb-meta { color: var(--color-text-3); font-size: 12px; font-weight: 400; font-variant-numeric: tabular-nums; }
-.cfg-bar-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-left: auto; }.cfg-bar-issue { margin-right: 4px; color: var(--color-warning, #F77234); font-size: 12px; line-height: 20px; }
+.cfg-bar-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-left: auto; }.cfg-bar-issue { margin-right: 4px; color: var(--app-color-warning); font-size: 12px; line-height: 20px; }
 .cfg-status-note { margin: 0; padding: 8px 12px; border-radius: 2px; background: var(--mt-fill-1); color: var(--color-text-2); font-size: 12px; line-height: 20px; }
 .cfg-missing { padding: 32px 16px; }
 
@@ -1321,9 +1321,9 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
 .cfg-field { display: flex; flex-direction: column; gap: 8px; width: 500px; max-width: 100%; }
 .cfg-field > label { color: var(--color-text-2); font-size: 14px; line-height: 22px; }
 .cfg-control { width: 100%; }
-.cfg-required { margin-right: 4px; color: var(--app-color-danger, #F53F3F); }
+.cfg-required { margin-right: 4px; color: var(--app-color-danger); }
 .cfg-field-hint { margin: 0; color: var(--color-text-3); font-size: 12px; line-height: 20px; }
-.cfg-issue-text { margin: 0; color: var(--app-color-danger, #F53F3F); font-size: 12px; line-height: 20px; }
+.cfg-issue-text { margin: 0; color: var(--app-color-danger); font-size: 12px; line-height: 20px; }
 
 /* 「规则配置」区块（2026-11-01 用户裁决：去页签，条款卡内三子区块） */
 .cfg-rules-panel { flex: 1; scroll-margin-top: 112px; }
@@ -1382,14 +1382,14 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
 .cfg-rule-empty { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--color-text-3); font-size: 13px; line-height: 20px; }
 .cfg-icon-btn { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 2px; background: transparent; color: rgb(var(--red-6)); cursor: pointer; }
 .cfg-icon-btn:hover, .cfg-icon-btn:focus-visible { background: rgb(var(--red-1)); }
-.cfg-icon-btn:disabled { color: var(--color-text-4, #C9CDD4); cursor: not-allowed; background: transparent; }
+.cfg-icon-btn:disabled { color: var(--color-text-4); cursor: not-allowed; background: transparent; }
 .cfg-icon-btn:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 2px; }
 
 /* 高级表达式（问题树无法表达时手写） */
 .cfg-advanced-body { display: flex; flex-direction: column; gap: 4px; }
 .cfg-advanced-readable { color: var(--color-text-3); font-size: 12px; line-height: 20px; }
 /* 语法错误才红字（未输入不显示，2026-11-01 用户裁决） */
-.cfg-advanced-readable.is-error { color: var(--app-color-danger, #F53F3F); }
+.cfg-advanced-readable.is-error { color: var(--app-color-danger); }
 
 /* 需求条目分组（2026-11-02 用户裁决）：Device:/Document: 标签行 + 组内添加按钮 + 已选行全宽边框 */
 .cfg-sr-group { display: flex; flex-direction: column; gap: 8px; }

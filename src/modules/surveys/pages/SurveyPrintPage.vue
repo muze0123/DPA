@@ -216,8 +216,8 @@ function doPrint() {
 .print-shell {
   min-height: 100dvh;
   padding: 24px 16px 40px;
-  background: #f2f3f5;
-  color: #1d2129;
+  background: var(--app-print-canvas);
+  color: var(--app-print-text);
   font-size: 12px;
   line-height: 1.6;
 }
@@ -234,19 +234,19 @@ function doPrint() {
 .print-btn {
   height: 32px;
   padding: 0 14px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--app-print-border);
   border-radius: 2px;
-  background: #ffffff;
-  color: #1d2129;
+  background: var(--app-print-paper);
+  color: var(--app-print-text);
   font-size: 14px;
   line-height: 30px;
   cursor: pointer;
 }
 
-.print-btn:hover { border-color: #005bf5; color: #005bf5; }
-.print-btn:focus-visible { outline: 2px solid #005bf5; outline-offset: 2px; }
-.print-btn-primary { border-color: #005bf5; background: #005bf5; color: #ffffff; }
-.print-btn-primary:hover { background: #3f7ff8; color: #ffffff; }
+.print-btn:hover { border-color: var(--app-print-primary); color: var(--app-print-primary); }
+.print-btn:focus-visible { outline: 2px solid var(--app-print-primary); outline-offset: 2px; }
+.print-btn-primary { border-color: var(--app-print-primary); background: var(--app-print-primary); color: var(--app-print-paper); }
+.print-btn-primary:hover { background: var(--app-print-primary-hover); color: var(--app-print-paper); }
 
 .print-paper {
   box-sizing: border-box;
@@ -255,64 +255,64 @@ function doPrint() {
   max-width: 100%;
   margin: 0 auto;
   padding: 16mm 16mm 14mm;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: var(--app-print-paper);
+  box-shadow: var(--app-print-shadow);
 }
 
-.print-loading { display: grid; place-items: center; color: #4e5969; }
+.print-loading { display: grid; place-items: center; color: var(--app-print-secondary); }
 
 /* 页眉 */
-.print-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12mm; padding-bottom: 4mm; border-bottom: 2px solid #1d2129; }
+.print-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12mm; padding-bottom: 4mm; border-bottom: 2px solid var(--app-print-text); }
 .print-brand { display: flex; flex-direction: column; gap: 1mm; }
 .print-brand-name { font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
-.print-brand-sub { font-size: 10px; color: #86909c; }
+.print-brand-sub { font-size: 10px; color: var(--app-print-muted); }
 .print-head-main { text-align: right; }
 .print-title { margin: 0; font-size: 19px; font-weight: 600; line-height: 1.35; }
-.print-meta { margin: 1mm 0 0; color: #4e5969; font-size: 11px; }
+.print-meta { margin: 1mm 0 0; color: var(--app-print-secondary); font-size: 11px; }
 
 /* 小节 */
 .print-section { margin-top: 6mm; break-inside: auto; }
-.print-h2 { margin: 0 0 2.5mm; font-size: 13px; font-weight: 600; line-height: 1.5; padding-left: 2.5mm; border-left: 3px solid #1d2129; }
+.print-h2 { margin: 0 0 2.5mm; font-size: 13px; font-weight: 600; line-height: 1.5; padding-left: 2.5mm; border-left: 3px solid var(--app-print-text); }
 .print-h3 { margin: 3mm 0 1.5mm; font-size: 11.5px; font-weight: 600; }
-.print-note { margin: 0 0 2mm; color: #4e5969; }
+.print-note { margin: 0 0 2mm; color: var(--app-print-secondary); }
 .print-summary { cursor: pointer; }
 
 /* 概要 */
 .print-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5mm 6mm; margin: 0; }
 .print-facts div { display: flex; gap: 2mm; min-width: 0; }
-.print-facts dt { flex: none; color: #4e5969; }
+.print-facts dt { flex: none; color: var(--app-print-secondary); }
 .print-facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 
 /* 表格 */
 .print-table { width: 100%; border-collapse: collapse; }
-.print-table th, .print-table td { border: 1px solid #c9cdd4; padding: 1.6mm 2mm; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
-.print-table th { background: #f2f3f5; font-weight: 600; }
+.print-table th, .print-table td { border: 1px solid var(--app-print-divider); padding: 1.6mm 2mm; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.print-table th { background: var(--app-print-canvas); font-weight: 600; }
 .print-table tr { break-inside: avoid; }
 .print-table thead { display: table-header-group; }
 .col-no { width: 15%; }
 .col-summary { width: 26%; }
 .col-state { width: 10%; }
 .col-evidence { width: 49%; }
-.print-label { color: #86909c; }
+.print-label { color: var(--app-print-muted); }
 .print-label::after { content: '：'; }
 .print-table p { margin: 0 0 1mm; }
-.print-links { color: #4e5969; word-break: break-all; }
-.print-empty { color: #86909c; }
+.print-links { color: var(--app-print-secondary); word-break: break-all; }
+.print-empty { color: var(--app-print-muted); }
 
 /* 材料 */
 .print-material-group { break-inside: avoid; }
 .print-material-list { margin: 0; padding-left: 4mm; }
 .print-material-list li { margin-bottom: 0.8mm; }
 .print-material-name { font-weight: 500; }
-.print-material-meta { color: #86909c; margin-left: 2mm; }
+.print-material-meta { color: var(--app-print-muted); margin-left: 2mm; }
 
 /* 不适用 */
-.print-not-applicable { margin: 0; padding-left: 4mm; color: #4e5969; }
+.print-not-applicable { margin: 0; padding-left: 4mm; color: var(--app-print-secondary); }
 .print-not-applicable li { margin-bottom: 0.8mm; }
-.print-na-no { display: inline-block; min-width: 22mm; color: #86909c; }
+.print-na-no { display: inline-block; min-width: 22mm; color: var(--app-print-muted); }
 
 /* 页脚 */
-.print-foot { display: flex; justify-content: space-between; gap: 6mm; margin-top: 8mm; padding-top: 2.5mm; border-top: 1px solid #c9cdd4; color: #86909c; font-size: 10px; }
+.print-foot { display: flex; justify-content: space-between; gap: 6mm; margin-top: 8mm; padding-top: 2.5mm; border-top: 1px solid var(--app-print-divider); color: var(--app-print-muted); font-size: 10px; }
 
 @page {
   size: A4;
@@ -320,7 +320,7 @@ function doPrint() {
 }
 
 @media print {
-  .print-shell { min-height: 0; padding: 0; background: #ffffff; }
+  .print-shell { min-height: 0; padding: 0; background: var(--app-print-paper); }
   .print-bar { display: none; }
   .print-paper { width: auto; min-height: 0; padding: 0; margin: 0; box-shadow: none; }
   .print-foot { break-inside: avoid; }

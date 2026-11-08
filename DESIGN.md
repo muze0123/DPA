@@ -12,6 +12,33 @@
 
 **Production use:** the Figma-backed values below are a design reference, not proof that the current Vue application implements every value or passes release acceptance. The open gates under Governance apply to the affected routes and components. Do not close a gate by editing this document alone.
 
+## Executable design system [Project, 2026-11-07]
+
+The implementation priority approved on 2026-11-07 is **Metritag semantic tokens (this specification) → Arco → shared compositions → verified page patterns → concise AI entry → automated checks**. Metritag values govern Arco appearance. Reuse an existing matching composition before assembling another implementation.
+
+The development entry is `AI-DESIGN.md`. `pnpm design:context` returns the relevant component index and project profile. Read the applicable sections of this specification when implementing or resolving a missing case.
+
+| Artifact | Responsibility |
+| --- | --- |
+| `src/design/tokens.core.json` | Shared geometry and semantic aliases, project format `metritag-css-tokens-v1` |
+| `src/design/tokens.project.json` | Existing project theme values, compatibility variables, and the Arco primary/link adapter |
+| `src/design/tokens.core.css` / `tokens.css` | Generated CSS, verified against JSON on build |
+| `src/design/project.json` | Scoped brand and editable/filter/detail punctuation differences |
+| `src/design/registry.json` | Actual component files, API contracts, page patterns, and evidence locations |
+| `src/design/patterns/README.md` | Composition and verification instructions |
+| `design-report/check.json` | Introduced and historical static findings |
+| `design-report/browser.json` | Latest executed browser assertions and screenshot paths |
+
+The initial JSON migration preserves existing theme assignments. The blue projects now explicitly map Arco primary/link normal, hover, and active values to this specification's measured control ramp. OpenData retains its approved teal mapping. Dark mappings remain project extensions. The prior DS-02 primary assignment gap for these mappings is addressed in code, while the broader route/state acceptance gates retain their own evidence requirements.
+
+Common components include `AppListToolbar`, `AppPagination`, `AppFormLayout`, `AppFieldLabel`, `AppDetailList`, and `ConfirmDialog`. The development-only `/__design-system` route demonstrates list and edit workflows in the current shell. Audit routes adopt the shared toolbar. Project-specific field punctuation decisions remain recorded in the original sections and in `project.json`.
+
+The shared confirmation component defines the four-part icon/title/optional-description/action structure, 560px width constrained to the viewport, 320px minimum height, a 48px header with the close control, and a footer without a divider. Its action uses the project's primary theme. Modules own async completion and pass loading/dismissible state. This shared composition applies to new confirmation surfaces in all three projects.
+
+`pnpm verify` and `pnpm build` enforce generated-token integrity and new static violations. `pnpm design:audit` includes historical violations as failures. Baseline records preserve identified pre-migration debt, scoped by file, rule, snippet and occurrence count. A passing incremental check only establishes that no additional covered violations were introduced. Visual and business acceptance follow the relevant route's release checklist.
+
+`pnpm design:sync` compares shared implementation files across the three configured projects. `node scripts/design-sync.mjs --write` propagates authorized common changes from the current project, with project theme, business rules, full specification history and debt records retained per project. Run token generation and checks in every target after synchronization.
+
 ## How to read this document
 
 Values in Figma-backed tables are read from the cached nodes or source prose. Where the source gives only a visual example, the rule is generalized from readable geometry, fills, strokes, and variant state names — those entries are marked **[Derived]**. Source wording is marked **[Stated]**. Project-level implementation contracts that Figma does not cover (routing, data, permissions, testing) are marked **[Project]**; their implementation status does not itself prove product or design approval. Cache gaps and disputed interpretations are listed under Source coverage.
@@ -28,8 +55,9 @@ Precedence: law/security/accessibility obligations > approved business rules and
 - **Page-title removal, 2026-10-24:** by user decision, business pages render **no page title and no subtitle inside the content area** — page identity is carried by the shell navigation. The former 18px/600/26 page-title role and every reference to it (Typography · Title roles, Spacing, Composition, Review checklist) are removed from this document. Panel, card, dialog, and drawer titles at 16px/600/24 are unchanged, and standalone full-screen routes keep their own hero scale.
 - **Ledger list update, 2026-10-25:** by user decision, recorded under the affected sections — (1) filter strips wrap on a uniform grid with right-aligned labels / left-aligned controls and the action group trailing the last filter (Filter control surface rule); (2) icon-only settings triggers render on the `#DDDDDD` fill (Icon-only toolbar controls) — **superseded 2026-10-26, see the next entry**; (3) business drawers use the `#F7F8FA` canvas with white header/footer/content-group cards, and read-only drawers close on mask click with a linear slide-right (Drawer).
 - **Icon trigger fill update, 2026-10-26:** by user decision, the 筛选条件设置 and 列设置 icon-only triggers drop the `#DDDDDD` fill and render on the **white business surface** (`app-btn-neutral`), matching the text buttons beside them in the same toolbar. The 2026-10-25 grey-fill rule and its `app-icon-trigger` implementation are retired; the authoritative wording now lives under Icon-only toolbar controls.
-- **Form field layout, 2026-11-01:** by user decision, configuration/edit forms use label-above + **500px control width** + left-side required asterisk, and read-only views switch to the `字段名：值` summary list (Form field layout under Components). Forms made of several equally mandatory parts split those parts into tabs; there is no extra progress strip (Mandatory-part headers under Lists).
+- **Form field layout, 2026-11-01:** by user decision, configuration/edit forms use label-above + **500px control width** + left-side required asterisk, and read-only views switch to the label-value summary list (Form field layout under Components). Forms made of several equally mandatory parts split those parts into tabs; there is no extra progress strip (Mandatory-part headers under Lists). The earlier `字段名：值` shorthand for that summary list was conceptual: the implemented `.app-detail-list` row list renders its labels **without** a colon, and the 2026-11-06 decision below scopes colons to editable field labels only.
 - **Row drag-reorder language, 2026-11-01:** by user decision, the 列设置 popover's drag-reorder grammar is promoted to the **project-wide standard** for pointer-driven row reordering: source row fades to `opacity: .55` with `grabbing` cursor, the valid destination row tints with `--color-primary-light-1` and carries a 3px `--app-accent` insertion line on the approached edge, and the drag snapshot must be the whole row via `dataTransfer.setDragImage` — never the bare 20×28 handle. Authoritative wording lives under Row drag-and-drop reorder (Components).
+- **Editable field-label colon, 2026-11-06:** by user decision, **every editable field label** in add/edit drawers, dialogs, and page-level edit/configuration/fill-in forms carries a trailing colon — full-width `：` in `zh-CN`, half-width `:` in `en-US`, switched by the shell's `<html lang>` (kept in sync by `src/app/stores/locale.ts`). Read-only detail labels and list-filter condition labels are explicitly **out of scope**. Implementation: `fieldLabel()` in `src/shared/fieldLabel.ts` for Arco `a-form-item` labels, and the global `.app-field-label` class in `src/styles/global.css` for hand-written labels. Both agree with the existing i18n `fieldSeparator` values (`surveys.workspace.fieldSeparator`, `versionPage.fieldSeparator`). Authoritative wording lives under Form field layout (Components).
 
 ### Decision and release gates [Project]
 
@@ -147,7 +175,7 @@ Keep three distinct layers: **Figma primitive** (the measured tables above), **a
 |---|---|---|---|
 | `--app-page` | `Fill-1 #F7F8FA` | `--mt-fill-1` in `global.css` | Bound: light resolves to `#F7F8FA` and is painted by `body` + `.product-shell`; dark resolves through Arco `--color-bg-1` (`rgb(23, 23, 26)`), not the `--mt-d-bg-1 #17181C` table value |
 | `--app-surface` | `Fill-7 #FFFFFF` | `--color-bg-2` in `global.css` | Verify resolved value and use on page/card surfaces |
-| `--app-accent` | `Theme-6 #005BF5` | `rgb(var(--primary-6))`; no project `--primary-6` assignment in `src/` | **Open DS-02:** Arco fallback may differ from Figma |
+| `--app-accent` | `Theme-6 #005BF5` | `rgb(var(--primary-6))`; explicit generated adapter in `src/design/tokens.css` (2026-11-07) | Primary mapping implemented; route/state verification follows DS-02 |
 | `--app-text-primary` | `Text-6 #1A1C20` | `--color-text-1` in `tokens.css` | Verify resolved value and contrast |
 | `--app-divider` | `Border-1 #EEEEEE` | `--color-border-2` in `global.css` and `tokens.css` | Verify resolved value; distinguish divider from control border |
 | `--app-control-border` | `Border-3 #DDDDDD` | `#DDDDDD` in `tokens.css` | Light value aligned; verify dark and focus states |
@@ -764,7 +792,13 @@ The Figma placeholder (暗提示) uses `Text-3 #999999`; entered content uses th
 
 ### Form field layout [Project, 2026-11-01 user decision]
 
-Applies to every configuration/edit form, not only the rule-management screens: **label above the control, control fixed at 500px, required asterisk to the left of the label** (`*` in `--app-color-danger`, 4px gap). Field rows stack vertically with a 16px gap; the label is 14px/400/22 in Text-2, the control keeps the 32px Input/Select geometry above. Options, helper text, and inline validation text sit under the control and stay inside the 500px column, so a long placeholder never widens the field. Read-only versions of the same form convert to a summary list — `字段名：值` on one baseline, label in Text-3, value in Text-1, no asterisk, no disabled input boxes.
+Applies to every configuration/edit form, not only the rule-management screens: **label above the control, control fixed at 500px, required asterisk to the left of the label** (`*` in `--app-color-danger`, 4px gap). Field rows stack vertically with a 16px gap; the label is 14px/400/22 in Text-2, the control keeps the 32px Input/Select geometry above. Options, helper text, and inline validation text sit under the control and stay inside the 500px column, so a long placeholder never widens the field. Read-only versions of the same form convert to the `.app-detail-list` label-value row list: label in Text-2, value in Text-1, a 16px label-to-value gap, no asterisk, no disabled input boxes, and — per the 2026-10-26 decision — **no colon on the label**. The colon rule below applies to editable field labels only.
+
+**Field-label colon [Project, 2026-11-06 user decision].** Every **editable** field label — in add/edit drawers, dialogs, and page-level edit/configuration/fill-in forms (rule configuration, section-form editor, version metadata, section fill-in and evidence/matching dialogs included) — ends with a colon: full-width `：` for `zh-CN`, half-width `:` for `en-US`. The switch is the shell's `<html lang>`, synchronized with the active locale by `src/app/stores/locale.ts`; this matches the existing i18n `fieldSeparator` values already used by read-only summary cells, so editable and read-only surfaces read consistently without changing either surface's layout.
+
+Two implementation paths are required because Arco's `FormItemLabel` appends a fixed whitespace text node inside `.arco-form-item-label`: a `::after` colon there would render as `字段名 ：` with an unwanted gap, and Arco's own `show-colon` only emits a half-width `:` that cannot be restyled. (1) For `<a-form-item>`, wrap the label expression with `fieldLabel(t('...'))` from `src/shared/fieldLabel.ts`. (2) For a hand-written `<label>` or field-text `<span>`, add the global `.app-field-label` class (`src/styles/global.css`), whose `::after` appends the colon to the text node itself — before trailing hint text and after a suffix asterisk, with no second colon where a read-only variant already renders `fieldSeparator`.
+
+Scope exclusions are deliberate and are release gates: **list-filter condition labels, table headers, option text of checkboxes/radios/switches, and read-only detail labels** (`.app-detail-list` / `.app-detail-label`, and `<dt>` cells that already render `fieldSeparator`) carry neither the class nor the helper. A filter label with `.app-field-label`, or a read-only label with both `fieldSeparator` and the class, is a defect. Required asterisks keep their existing position relative to the label text; this decision adds a colon, it does not move or restyle the asterisk.
 
 **Mandatory-part headers [Project].** When a page carries several parts that must *all* be completed before submission, the parts stay as tabs (one part per tab, never stacked into one pane) and each tab title states its own obligation: asterisk + part name + `已配置 x/总` progress chip + the count of unresolved issues. No separate progress strip is rendered above the tabs (2026-11-01 user decision: the strip was removed; each tab title already carries the progress chip, and an item-navigation column anchors the first tab).
 
@@ -1022,11 +1056,13 @@ The four variants are a complete cross-product with the five themes: `dark` is a
 
 **Types [Stated]:** 基础样式 (basic) · 上下排列样式 (stacked label above value) · 带边框样式 (bordered).
 
-**[Derived]** Labels are 14–16px/400 in `Text-4 #666666`; values are 14–16px/400–500 in `Text-5/6`. The basic style writes the label with a trailing colon (`标题一：`). Real-world sample fields in the source — 法定负责人, 统一社会信用代码, 成立日期, 核准日期, 营业期限, 经验范围 — indicate this component's intended use for registry/company detail panes.
+**[Derived]** Labels are 14–16px/400 in `Text-4 #666666`; values are 14–16px/400–500 in `Text-5/6`. The basic style writes the label with a trailing colon (`标题一：`). Real-world sample fields in the source — 法定负责人, 统一社会信用代码, 成立日期, 核准日期, 营业期限, 经验范围 — indicate this component's intended use for registry/company detail panes. **The trailing colon here is a Figma source observation, not a project-wide rule:** the 2026-11-06 user decision scopes colons to editable field labels (Form field layout under Components), while this application's read-only detail row list renders labels without one.
 
 **[Project]** Use Descriptions for read-only facts rather than a disabled form that only looks editable.
 
 **[Project] Read-only detail drawers use the label-value row list (2026-10-26 user decision).** Inside read-only detail drawers (功能详情, 审计详情, and later non-editing panels), read-only facts no longer render as the bordered Descriptions table. Each field is one row of the shared `.app-detail-list` (implemented once in `src/styles/global.css`): a label column (14px, Text-2, minimum 112px wide, sizing to the longest label) + a left-aligned value column (14px, Text-1) with a **16px gap between label and value** and a **10px vertical gap between consecutive field rows** (22px text line inside the row), and **no cell borders**. Status/role/action-type/result keep their Tag / dot rendering inside the value column (e.g. 功能状态 renders as a colored Tag). The bordered Descriptions table itself remains sanctioned outside drawers where a denser matrix is genuinely needed; a detail drawer reintroducing the bordered table is a defect from this date on.
+
+**[Project] Colon boundary (2026-11-06 user decision).** Read-only labels stay colon-free in the `.app-detail-list` row list. Where a read-only summary uses `<dt>` cells instead (问卷详情), the label already appends the i18n `fieldSeparator` (`：` / `:`) and must not also receive `.app-field-label`. Do not treat the editable-field colon rule as permission to restyle these read-only surfaces; the two decisions are intentionally different and both are recorded under Form field layout / Governance.
 
 ### Empty 空状态
 
@@ -1441,7 +1477,7 @@ Design review of the adapter covers medium controls (32px), 2px/4px radii, focus
 | Transient / persistent / actionable feedback | `Message` / `a-alert` / `Notification` | Do not triple-report one failure |
 | Data visualization | ECharts with the `metritag` theme | Accessible summary and keyboard values; add a visible table when data detail is required |
 
-Reuse order: official component → project composition → domain component → approved deep customization. Require multiple use cases and a stable API before promoting a wrapper. No copied library source, `node_modules` patch, or broad `.arco-*` override.
+Implementation foundation: Metritag semantic tokens → Arco. Composition reuse order: existing shared composition → existing domain component → composition of adapted Arco primitives → approved deep customization. Require multiple use cases and a stable API before promoting a wrapper. No copied library source, `node_modules` patch, or broad `.arco-*` override.
 
 **Unspecified component fallback [Project].** Figma has named pages and variants for the components inventoried under Source coverage, not every Arco control or every keyboard/async state. For an unlisted component or state, first use the nearest Metritag semantic token and the existing project pattern; retain Arco's accessible mechanics and default geometry only where no Metritag rule conflicts. Record the missing case and seek a design decision before promoting a new global token or claiming it is a Figma value. The `:focus-visible` contract above is such a project fallback, not a measured Figma variant.
 

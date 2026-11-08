@@ -21,6 +21,7 @@ import {
 } from '../../compliance/data/ruleVersions';
 import RuleSourceDetailDrawer from '../components/RuleSourceDetailDrawer.vue';
 import { STANDARD_BASELINE, surveyTemplates } from '../../templates/data/templates';
+import { fieldLabel } from '../../../shared/fieldLabel';
 import {
   MOCK_CURRENT_USER, SURVEY_TOTAL_CLAUSES, mergeLocalSurveyDrafts, surveyRecords, updateSurveyDraft, type SurveyRecord,
 } from '../data/surveys';
@@ -330,7 +331,7 @@ async function refreshRule() {
       @submit-success="submitDraft"
     >
       <section class="create-panel" :aria-label="t('surveys.create.settings')">
-        <a-form-item field="functionId" :label="t('surveys.create.function')" required>
+        <a-form-item field="functionId" :label="fieldLabel(t('surveys.create.function'))" required>
           <a-select v-model="form.functionId" allow-search allow-clear :placeholder="t('surveys.create.functionPlaceholder')" :disabled="!selectableFunctions.length">
             <a-option v-for="item in selectableFunctions" :key="item.id" :value="item.id" :label="`${item.fuliId} · ${item.functionName}`" />
           </a-select>
@@ -381,7 +382,7 @@ async function refreshRule() {
           </div>
         </div>
 
-        <a-form-item field="ruleId" :label="t('surveys.create.ruleSelect')" required>
+        <a-form-item field="ruleId" :label="fieldLabel(t('surveys.create.ruleSelect'))" required>
           <a-select v-model="form.ruleId" allow-clear :placeholder="t('surveys.create.rulePlaceholder')">
             <a-option v-for="item in ruleOptions" :key="item.id" :value="item.id" :label="t('surveys.create.ruleOption', { name: item.name, count: item.questionSet.length })" />
           </a-select>

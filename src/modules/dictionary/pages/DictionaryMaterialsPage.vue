@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
-import { Message, Modal, type TableColumnData } from '@arco-design/web-vue';
+import { Message, type TableColumnData } from '@arco-design/web-vue';
 import { IconDownload, IconExclamationCircle, IconInfoCircle, IconLeft, IconMore, IconPlus, IconRefresh, IconRight, IconSearch } from '@arco-design/web-vue/es/icon';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { useTaskCenterStore } from '../../task-center/stores/taskCenter';
 import { ruleSet } from '../../compliance/data/rules';
+import ConfirmDialog from '../../../shared/components/ConfirmDialog.vue';
+import { fieldLabel } from '../../../shared/fieldLabel';
 import {
   BASIS_CODES, FLAG_CODES, PHASE_CODES, REVIEW_CODES, dictionary, materials, nextId, persistLibrary,
   type BasisCode, type DictionaryItem, type FlagCode, type MaterialItem, type PhaseCode, type ReviewCode,
@@ -36,6 +38,20 @@ const pageSize = ref(10);
 const jumpPage = ref(1);
 const editor = ref<Editor | null>(null);
 const drawerOpen = ref(false);
+const confirmation = ref<{ kind: 'discard' } | { kind: 'delete'; tab: Tab; item: DictionaryItem | MaterialItem } | null>(null);
+const confirmationTitle = computed(() => t(confirmation.value?.kind === 'discard' ? 'library.discardTitle' : 'library.delete'));
+const confirmationBody = computed(() => confirmation.value?.kind === 'delete'
+  ? t('library.deleteConfirm', { name: confirmation.value.item.name }) : t('library.discardBody'));
+const confirmationAction = computed(() => t(confirmation.value?.kind === 'discard' ? 'library.discard' : 'library.delete'));
+function confirmLibraryAction() {
+  const action = confirmation.value;
+  if (!action) return;
+  if (action.kind === 'discard') closeEditor();
+  else if (!commit(action.tab === 'dictionary' ? dictionary.filter(row => row.id !== action.item.id) : [...dictionary],
+    action.tab === 'materials' ? materials.filter(row => row.id !== action.item.id) : [...materials], 'library.deletedLocal')) return;
+  confirmation.value = null;
+}
+
 const saving = ref(false);
 const error = ref('');
 const exportOpen = ref(false);
@@ -210,8 +226,7 @@ function closeEditor() {
 }
 function requestClose() {
   if (!dirty.value) { closeEditor(); return; }
-  Modal.confirm({ title: t('library.discardTitle'), content: t('library.discardBody'),
-    okText: t('library.discard'), cancelText: t('library.cancel'), onOk: closeEditor });
+  confirmation.value = { kind: 'discard' };
 }
 function commit(nextDictionary: DictionaryItem[], nextMaterials: MaterialItem[], notice: string) {
   if (!persistLibrary({ dictionary: nextDictionary, materials: nextMaterials })) {
@@ -326,11 +341,7 @@ function confirmReject() {
   rejectTarget.value = null;
 }
 function remove(kind: Tab, item: DictionaryItem | MaterialItem) {
-  Modal.confirm({ title: t('library.delete'), content: t('library.deleteConfirm', { name: item.name }),
-    okText: t('library.delete'), cancelText: t('library.cancel'), onOk: () => {
-      commit(kind === 'dictionary' ? dictionary.filter((row) => row.id !== item.id) : [...dictionary],
-        kind === 'materials' ? materials.filter((row) => row.id !== item.id) : [...materials], 'library.deletedLocal');
-    } });
+  confirmation.value = { kind: 'delete', tab: kind, item };
 }
 function csvValue(value: string) {
   const safe = /^[\s]*[=+@\-]/.test(value) ? `'${value}` : value;
@@ -496,16 +507,16 @@ async function confirmExport() {
           <a-alert v-if="error" type="error" :show-icon="true" role="alert">{{ error }}</a-alert>
           <a-alert v-if="editingApproved" type="info" :show-icon="true">{{ t('library.editApprovedHint') }}</a-alert>
           <div class="library-form-grid">
-            <a-form-item field="name" :label="t('library.fields.name')">
+            <a-form-item field="name" :label="fieldLabel(t('library.fields.name'))">
               <a-input v-model="dictForm.name" :max-length="64" show-word-limit :placeholder="t('library.inputPlaceholder', { field: t('library.fields.name') })" />
             </a-form-item>
-            <a-form-item field="alias" :label="t('library.fields.alias')">
+            <a-form-item field="alias" :label="fieldLabel(t('library.fields.alias'))">
               <a-input v-model="dictForm.alias" :max-length="200" show-word-limit :placeholder="t('library.inputPlaceholder', { field: t('library.fields.alias') })" />
             </a-form-item>
-            <a-form-item field="level" :label="t('library.fields.level')">
+            <a-form-item field="level" :label="fieldLabel(t('library.fields.level'))">
               <a-input v-model="dictForm.level" :max-length="32" :placeholder="t('library.inputPlaceholder', { field: t('library.fields.level') })" />
             </a-form-item>
-            <a-form-item field="category" :label="t('library.fields.category')">
+            <a-form-item field="category" :label="fieldLabel(t('library.fields.category'))">
               <a-input v-model="dictForm.category" :max-length="32" :placeholder="t('library.inputPlaceholder', { field: t('library.fields.category') })" />
             </a-form-item>
           </div>
@@ -514,7 +525,7 @@ async function confirmExport() {
           <h2 class="library-section-heading">{{ t('library.sectionAttributes') }}</h2>
           <p class="library-hint">{{ t('library.attributeHint') }}</p>
           <div class="library-form-grid">
-            <a-form-item v-for="key in FLAG_CODES" :key="key" :field="`flags.${key}`" :label="t(`library.flags.${key}`)">
+            <a-form-item v-for="key in FLAG_CODES" :key="key" :field="`flags.${key}`" :label="fieldLabel(t(`library.flags.${key}`))">
               <a-select :model-value="flagChoice(key)" @change="setFlag(key, $event)">
                 <a-option value="unknown">{{ t('library.unknown') }}</a-option>
                 <a-option value="yes">{{ t('library.yes') }}</a-option>
@@ -530,31 +541,31 @@ async function confirmExport() {
         <div class="ledger-drawer-group">
           <h2 class="library-section-heading">{{ t('library.sectionBasics') }}</h2>
           <a-alert v-if="error" type="error" :show-icon="true" role="alert">{{ error }}</a-alert>
-          <a-form-item field="name" :label="t('library.fields.material')">
+          <a-form-item field="name" :label="fieldLabel(t('library.fields.material'))">
             <a-input v-model="materialForm.name" :max-length="200" show-word-limit :placeholder="t('library.inputPlaceholder', { field: t('library.fields.material') })" />
           </a-form-item>
           <div class="library-form-grid">
-            <a-form-item field="phase" :label="t('library.fields.phase')">
+            <a-form-item field="phase" :label="fieldLabel(t('library.fields.phase'))">
               <a-select v-model="materialForm.phase" :placeholder="t('library.selectPlaceholder', { field: t('library.fields.phase') })">
                 <a-option v-for="code in PHASE_CODES" :key="code" :value="code">{{ t(`library.phase.${code}`) }}</a-option>
               </a-select>
             </a-form-item>
-            <a-form-item field="basis" :label="t('library.fields.basis')">
+            <a-form-item field="basis" :label="fieldLabel(t('library.fields.basis'))">
               <a-select v-model="materialForm.basis" :placeholder="t('library.selectPlaceholder', { field: t('library.fields.basis') })">
                 <a-option v-for="code in BASIS_CODES" :key="code" :value="code">{{ t(`library.basis.${code}`) }}</a-option>
               </a-select>
             </a-form-item>
-            <a-form-item field="form" :label="t('library.fields.form')">
+            <a-form-item field="form" :label="fieldLabel(t('library.fields.form'))">
               <a-input v-model="materialForm.form" :max-length="200" show-word-limit :placeholder="t('library.inputPlaceholder', { field: t('library.fields.form') })" />
             </a-form-item>
-            <a-form-item field="method" :label="t('library.fields.method')">
+            <a-form-item field="method" :label="fieldLabel(t('library.fields.method'))">
               <a-input v-model="materialForm.method" :max-length="200" show-word-limit :placeholder="t('library.inputPlaceholder', { field: t('library.fields.method') })" />
             </a-form-item>
           </div>
         </div>
         <div class="ledger-drawer-group">
           <h2 class="library-section-heading">{{ t('library.sectionClauses') }}</h2>
-          <a-form-item field="clauses" :label="t('library.fields.clauses')">
+          <a-form-item field="clauses" :label="fieldLabel(t('library.fields.clauses'))">
             <a-select v-model="materialForm.clauses" multiple allow-search :max-tag-count="3"
               :placeholder="t('library.selectClauses')"><a-option v-for="clause in sourceClauses" :key="clause.code" :value="clause.code">{{ clause.code }} · {{ clause.topic }}</a-option></a-select>
           </a-form-item>
@@ -602,7 +613,7 @@ async function confirmExport() {
     <a-modal :visible="!!rejectTarget" :width="456" :mask-closable="false" :title="t('library.reject')" @cancel="rejectTarget = null">
       <p class="library-modal-text">{{ t('library.rejectConfirm', { name: rejectTarget?.name ?? '' }) }}</p>
       <label class="library-modal-field">
-        <span class="library-modal-label"><span class="library-modal-required" aria-hidden="true">*</span>{{ t('library.rejectReason') }}</span>
+        <span class="library-modal-label app-field-label"><span class="library-modal-required" aria-hidden="true">*</span>{{ t('library.rejectReason') }}</span>
         <a-textarea v-model="rejectReason" :max-length="100" show-word-limit :placeholder="t('library.rejectPlaceholder')" :auto-size="{ minRows: 3, maxRows: 5 }" />
         <p v-if="rejectError" class="library-modal-error" role="alert">{{ rejectError }}</p>
       </label>
@@ -611,6 +622,9 @@ async function confirmExport() {
         <a-button type="primary" @click="confirmReject">{{ t('library.confirm') }}</a-button>
       </template>
     </a-modal>
+    <ConfirmDialog :visible="confirmation !== null" :title="confirmationTitle" :description="confirmationBody"
+      :ok-text="confirmationAction" :cancel-text="t('library.cancel')"
+      @update:visible="!$event && (confirmation = null)" @confirm="confirmLibraryAction" />
   </main>
 </template>
 

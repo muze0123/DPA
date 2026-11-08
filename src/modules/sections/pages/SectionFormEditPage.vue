@@ -465,7 +465,7 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm(t('sectionForms.editor.d
         </div>
         <div class="form-basics-grid">
           <div class="form-basic-field">
-            <label :for="'form-field-formNo'"><span class="form-required">*</span>{{ t('sectionForms.editor.formNo') }}</label>
+            <label class="app-field-label" :for="'form-field-formNo'"><span class="form-required">*</span>{{ t('sectionForms.editor.formNo') }}</label>
             <a-input
               id="form-field-formNo"
               v-model="formNo"
@@ -477,7 +477,7 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm(t('sectionForms.editor.d
             />
           </div>
           <div class="form-basic-field">
-            <label :for="'form-field-name'"><span class="form-required">*</span>{{ t('sectionForms.editor.name') }}</label>
+            <label class="app-field-label" :for="'form-field-name'"><span class="form-required">*</span>{{ t('sectionForms.editor.name') }}</label>
             <a-input
               id="form-field-name"
               v-model="name"
@@ -488,7 +488,7 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm(t('sectionForms.editor.d
             />
           </div>
           <div class="form-basic-field form-basic-field--wide">
-            <label :for="'form-field-note'">{{ t('sectionForms.editor.note') }}</label>
+            <label class="app-field-label" :for="'form-field-note'">{{ t('sectionForms.editor.note') }}</label>
             <a-textarea
               id="form-field-note"
               v-model="note"

@@ -12,6 +12,7 @@ function latestPublishedRuleId(): string {
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    ...(import.meta.env.DEV ? [{ path: "/__design-system", name: "design-system-patterns", component: () => import("../design/patterns/DesignPatternsPage.vue"), meta: { layout: "product" } }] : []),
     {
       path: '/',
       redirect: '/functions',

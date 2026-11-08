@@ -673,7 +673,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', onResize));
 
           <div class="standard-clarify-form">
             <label class="standard-clarify-field">
-              <span class="standard-clarify-label">{{ t('standard.clarification.inputLabel') }}</span>
+              <span class="standard-clarify-label app-field-label">{{ t('standard.clarification.inputLabel') }}</span>
               <a-textarea
                 v-model="clarificationText" :max-length="500" show-word-limit
                 :auto-size="{ minRows: 3, maxRows: 8 }" :placeholder="t('standard.clarification.placeholder')"

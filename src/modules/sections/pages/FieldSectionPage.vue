@@ -185,7 +185,7 @@ function shadeColor(shade: FieldShade): string {
           <div v-for="field in fields" :key="field.code" class="field-row" :class="`field-${shadeOf(field.code)}`">
             <div class="field-meta">
               <span class="field-code">{{ field.code }}</span>
-              <label :for="`${section}-${field.code}`">{{ labelOf(field) }}</label>
+              <label class="app-field-label" :for="`${section}-${field.code}`">{{ labelOf(field) }}</label>
               <a-tag :color="shadeColor(shadeOf(field.code))">{{ shadeLabel(shadeOf(field.code)) }}</a-tag>
               <span v-if="driversOf(field).length" class="field-drivers">
                 <span v-for="no in driversOf(field)" :key="no" class="driver-chip">{{ no }}</span>

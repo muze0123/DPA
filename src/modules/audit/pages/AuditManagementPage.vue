@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import AppListToolbar from '../../../design/components/AppListToolbar.vue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Message, type TableColumnData } from '@arco-design/web-vue';
-import { IconDownload, IconExclamationCircle, IconFilter, IconLeft, IconRefresh, IconRight, IconSearch, IconSettings } from '@arco-design/web-vue/es/icon';
+import { IconDownload, IconFilter, IconLeft, IconRefresh, IconRight, IconSearch, IconSettings } from '@arco-design/web-vue/es/icon';
+import ConfirmDialog from '../../../shared/components/ConfirmDialog.vue';
 import ColumnSettingsPopover, { type ColumnSettingsItem } from '../../../shared/components/ColumnSettingsPopover.vue';
 import { useTaskCenterStore } from '../../task-center/stores/taskCenter';
 import { auditActors, auditRecords, type AuditRecord } from '../data/audit';
@@ -354,10 +356,8 @@ async function confirmExport() {
 
     <!-- 数据列表：标题「审计记录」+ 右侧导出/列设置；分页按 DESIGN.md Pagination 契约 -->
     <section class="audit-list" role="region" :aria-label="t('audit.listTitle')">
-      <div class="audit-list-toolbar">
-        <h2 class="audit-list-title">{{ t('audit.listTitle') }}</h2>
-        <span class="audit-list-count" role="status">{{ t('audit.pagination.total', { count: filteredRows.length }) }}</span>
-        <div class="audit-list-actions">
+      <AppListToolbar :title="t('audit.listTitle')" :summary="t('audit.pagination.total', { count: filteredRows.length })">
+        <template #actions>
           <a-button class="app-btn-neutral" @click="requestExport">
             <template #icon><IconDownload /></template>
             {{ t('audit.actions.export') }}
@@ -378,8 +378,8 @@ async function confirmExport() {
               </a-button>
             </a-tooltip>
           </ColumnSettingsPopover>
-        </div>
-      </div>
+        </template>
+      </AppListToolbar>
 
       <a-table
         class="audit-table"
@@ -486,25 +486,19 @@ async function confirmExport() {
     </a-drawer>
 
     <!-- 导出确认弹窗（DESIGN.md · Batch export baseline）：确认后进入任务中心「下载任务」 -->
-    <a-modal
+    <ConfirmDialog
       :visible="exportOpen"
-      :width="456"
-      :mask-closable="!exporting"
+      icon="info"
       :title="t('audit.exportNotice.title')"
-      @cancel="!exporting && (exportOpen = false)"
-    >
-      <div class="audit-export-notice">
-        <IconExclamationCircle class="audit-export-icon" />
-        <div class="audit-export-text">
-          <p>{{ t('audit.exportNotice.line1') }}</p>
-          <p>{{ t('audit.exportNotice.line2') }}</p>
-        </div>
-      </div>
-      <template #footer>
-        <a-button class="app-btn-neutral" :disabled="exporting" @click="exportOpen = false">{{ t('audit.exportNotice.cancel') }}</a-button>
-        <a-button type="primary" :loading="exporting" @click="confirmExport">{{ t('audit.exportNotice.confirm') }}</a-button>
-      </template>
-    </a-modal>
+      :description="[t('audit.exportNotice.line1'), t('audit.exportNotice.line2')]"
+      :cancel-text="t('audit.exportNotice.cancel')"
+      :ok-text="t('audit.exportNotice.confirm')"
+      :ok-loading="exporting"
+      :cancel-disabled="exporting"
+      :dismissible="!exporting"
+      @update:visible="exportOpen = $event"
+      @confirm="confirmExport"
+    />
   </main>
 </template>
 
@@ -525,11 +519,6 @@ async function confirmExport() {
 
 /* 数据列表 */
 .audit-list { flex: 1; min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
-.audit-list-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
-.audit-list-title { margin: 0; font-size: 16px; font-weight: 600; line-height: 24px; }
-/* 标题右侧记录总数：辅助文案 12px/20（DESIGN.md 字阶），随筛选/分页实时更新；与标题间距由 toolbar gap 12px 提供 */
-.audit-list-count { color: var(--color-text-3); font-size: 12px; line-height: 20px; font-variant-numeric: tabular-nums; }
-.audit-list-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
 
 /* DESIGN.md · Pagination：右对齐「共 N 条 → 每页条数 → 页码 → 跳至」，控件表面走 global.css 共享 app-pagination 规则 */
 .audit-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 16px; color: var(--color-text-2); }
@@ -564,10 +553,6 @@ async function confirmExport() {
 .audit-drawer-group { display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 2px; background: var(--app-surface); }
 
 /* 导出确认弹窗（DESIGN.md · Batch export baseline，与功能台账同一形态） */
-.audit-export-notice { display: flex; align-items: flex-start; gap: 12px; }
-.audit-export-icon { flex: none; margin-top: 2px; color: var(--app-color-warning); font-size: 24px; }
-.audit-export-text p { margin: 0 0 4px; line-height: 22px; }
-.audit-export-text p:last-child { margin-bottom: 0; }
 
 @media (max-width: 900px) {
   .audit-filter-panel { align-items: stretch; flex-direction: column; }

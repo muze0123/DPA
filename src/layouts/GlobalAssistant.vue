@@ -104,7 +104,7 @@ onBeforeUnmount(() => {
   display: grid; place-items: center; width: 48px; height: 48px;
   border: 0; border-radius: 50%; color: var(--color-white);
   background: rgb(var(--primary-6)); cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .16);
+  box-shadow: var(--app-assistant-shadow);
 }
 .assistant-launcher:hover, .assistant-send:hover:not(:disabled) { background: rgb(var(--primary-5)); }
 .assistant-panel {
@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
   display: flex; flex-direction: column; width: min(372px, calc(100vw - 32px));
   height: min(420px, calc(100dvh - 100px)); min-height: 240px;
   overflow: hidden; border-radius: 8px; color: var(--color-text-1);
-  background: var(--color-bg-popup); box-shadow: 0 8px 28px rgba(0, 0, 0, .18);
+  background: var(--color-bg-popup); box-shadow: var(--app-assistant-panel-shadow);
 }
 .assistant-header { display: flex; align-items: center; gap: 8px; flex: none; min-height: 52px; padding: 0 16px; border-bottom: 1px solid var(--color-border-2); }
 .assistant-header h2 { margin: 0; font-size: 18px; font-weight: 600; }

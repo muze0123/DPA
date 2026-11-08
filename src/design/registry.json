@@ -1,0 +1,135 @@
+{
+  "version": "1.0.0",
+  "priority": [
+    "Metritag semantic tokens (DESIGN.md)",
+    "Arco",
+    "shared compositions",
+    "verified page patterns",
+    "AI entry",
+    "automated checks"
+  ],
+  "components": [
+    {
+      "name": "AppListToolbar",
+      "file": "src/design/components/AppListToolbar.vue",
+      "modes": [
+        "list"
+      ],
+      "props": [
+        "title: string",
+        "summary?: string"
+      ],
+      "slots": [
+        "actions"
+      ],
+      "usage": "Section title, record count and wrapping actions"
+    },
+    {
+      "name": "AppFormLayout",
+      "file": "src/design/components/AppFormLayout.vue",
+      "modes": [
+        "form"
+      ],
+      "slots": [
+        "default"
+      ],
+      "usage": "Wrap a vertical a-form, module owns model and rules"
+    },
+    {
+      "name": "AppFieldLabel",
+      "file": "src/design/components/AppFieldLabel.vue",
+      "modes": [
+        "list",
+        "form",
+        "detail"
+      ],
+      "props": [
+        "text: string",
+        "as?: label | span",
+        "for?: string",
+        "context?: editable | filter | detail"
+      ],
+      "usage": "Localized punctuation from project.json"
+    },
+    {
+      "name": "AppDetailList",
+      "file": "src/design/components/AppDetailList.vue",
+      "modes": [
+        "detail"
+      ],
+      "props": [
+        "fields: readonly {key,label,value}[]"
+      ],
+      "usage": "Read-only facts"
+    },
+    {
+      "name": "ConfirmDialog",
+      "file": "src/shared/components/ConfirmDialog.vue",
+      "modes": [
+        "confirmation",
+        "form"
+      ],
+      "props": [
+        "v-model:visible",
+        "title",
+        "description?",
+        "icon?",
+        "okLoading?",
+        "dismissible?",
+        "single?"
+      ],
+      "events": [
+        "confirm"
+      ],
+      "usage": "Caller controls async completion and closes after confirmed success"
+    },
+    {
+      "name": "ColumnSettingsPopover",
+      "file": "src/shared/components/ColumnSettingsPopover.vue",
+      "modes": [
+        "list"
+      ],
+      "usage": "Read current source API for per-project column and filter settings"
+    },
+    {
+      "name": "AppPagination",
+      "file": "src/design/components/AppPagination.vue",
+      "modes": [
+        "list"
+      ],
+      "props": [
+        "v-model:current",
+        "v-model:pageSize",
+        "total",
+        "pageSizes?"
+      ],
+      "usage": "Total, page size, previous/pages/next, jumper. Page size resets current."
+    }
+  ],
+  "patterns": [
+    {
+      "name": "list-and-editor",
+      "file": "src/design/patterns/DesignPatternsPage.vue",
+      "modes": [
+        "list",
+        "form",
+        "detail",
+        "confirmation"
+      ],
+      "route": "/__design-system",
+      "environment": "development",
+      "evidence": "design-report/browser.json",
+      "status": "browser-verified-2026-11-07"
+    },
+    {
+      "name": "audit-list",
+      "file": "src/modules/audit/pages/AuditManagementPage.vue",
+      "modes": [
+        "list"
+      ],
+      "route": "/audit",
+      "evidence": "design-report/browser.json",
+      "status": "browser-verified-2026-11-07"
+    }
+  ]
+}

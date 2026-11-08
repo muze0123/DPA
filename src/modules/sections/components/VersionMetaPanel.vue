@@ -61,7 +61,7 @@ const sourceDisplay = computed(() => {
     <div class="version-panel-heading"><h2>{{ t('versionPage.settings') }}</h2></div>
     <div class="version-meta">
       <div class="version-field" :class="{ 'is-invalid': props.versionIssue, 'is-readonly': readOnly }">
-        <label v-if="!readOnly" class="version-field-label" :for="`${idPrefix}-version-number`">
+        <label v-if="!readOnly" class="version-field-label app-field-label" :for="`${idPrefix}-version-number`">
           <span class="version-required" aria-hidden="true">*</span>{{ t('versionPage.version') }}
         </label>
         <span v-else class="version-field-label">{{ t('versionPage.version') }}{{ t('versionPage.fieldSeparator') }}</span>
@@ -81,7 +81,7 @@ const sourceDisplay = computed(() => {
       </div>
 
       <div class="version-field" :class="{ 'is-readonly': readOnly }">
-        <span class="version-field-label">{{ t('versionPage.source') }}<template v-if="readOnly">{{ t('versionPage.fieldSeparator') }}</template></span>
+        <span class="version-field-label">{{ t('versionPage.source') }}{{ t('versionPage.fieldSeparator') }}</span>
         <!-- 只读态：与概要条同构的纯文本展示；新建态：可编辑、选填下拉；编辑态：禁用输入 -->
         <span v-if="readOnly" class="version-value">{{ sourceDisplay }}</span>
         <a-select
@@ -104,7 +104,7 @@ const sourceDisplay = computed(() => {
       </div>
 
       <div class="version-field" :class="{ 'is-invalid': props.descriptionIssue, 'is-readonly': readOnly }">
-        <label v-if="!readOnly" class="version-field-label" :for="`${idPrefix}-version-description`">{{ t('versionPage.description') }}</label>
+        <label v-if="!readOnly" class="version-field-label app-field-label" :for="`${idPrefix}-version-description`">{{ t('versionPage.description') }}</label>
         <span v-else class="version-field-label">{{ t('versionPage.description') }}{{ t('versionPage.fieldSeparator') }}</span>
         <span v-if="readOnly" class="version-value version-value--multiline">{{ description || '—' }}</span>
         <a-textarea

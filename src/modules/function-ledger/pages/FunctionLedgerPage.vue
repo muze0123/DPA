@@ -16,6 +16,7 @@ import type { ParsedWorkbook } from '../data/workbook';
 import { TIANSHU_PARTS, TIANSHU_PLATFORMS, findPartByLabel, partLabel, platformLabel } from '../data/tianshu';
 import { mergeLocalSurveyDrafts, surveyRecords, type SurveyRecord } from '../../surveys/data/surveys';
 import { loadLocalSurveyDrafts } from '../../surveys/data/drafts';
+import { fieldLabel } from '../../../shared/fieldLabel';
 
 type FilterKey = 'keyword' | 'platformName' | 'owner' | 'department' | 'developmentLocation' | 'status' | 'masterStatus' | 'masterEcu' | 'createdAt';
 type ColumnKey = 'index' | 'platformName' | 'fuliId' | 'functionName' | 'functionDescription' | 'subfunctions' | 'controller' | 'owner' | 'developmentLocation' | 'masterEcu' | 'status' | 'masterStatus' | 'relatedSurveys' | 'creator' | 'createdAt' | 'updatedAt';
@@ -766,14 +767,14 @@ async function confirmExport() {
           <h2 class="ledger-section-heading">{{ t('ledger.form.basics') }}</h2>
           <div class="ledger-form-grid">
             <!-- 平台名称：天枢「整车架构平台」下拉（编号-名称，2026-10-29），旧数据现值补入选项 -->
-            <a-form-item field="platformName" :label="t('ledger.fields.platformName')" required>
+            <a-form-item field="platformName" :label="fieldLabel(t('ledger.fields.platformName'))" required>
               <a-select v-model="form.platformName" allow-clear :placeholder="t('ledger.form.selectPlaceholder', { field: t('ledger.fields.platformName') })">
                 <a-option v-for="option in formPlatformOptions" :key="option" :value="option">{{ option }}</a-option>
               </a-select>
             </a-form-item>
-            <a-form-item field="fuliId" :label="t('ledger.fields.fuliId')" required><a-input v-model="form.fuliId" :placeholder="t('ledger.form.inputPlaceholder', { field: t('ledger.fields.fuliId') })" :disabled="drawerMode === 'edit' && detail !== null && relatedSurveyCount(detail) > 0" :max-length="32" show-word-limit /></a-form-item>
-            <a-form-item field="functionName" :label="t('ledger.fields.functionName')" required><a-input v-model="form.functionName" :placeholder="t('ledger.form.inputPlaceholder', { field: t('ledger.fields.functionName') })" :max-length="50" show-word-limit /></a-form-item>
-            <a-form-item field="responsibles" :label="t('ledger.fields.responsibles')" required class="ledger-responsibles-form-item">
+            <a-form-item field="fuliId" :label="fieldLabel(t('ledger.fields.fuliId'))" required><a-input v-model="form.fuliId" :placeholder="t('ledger.form.inputPlaceholder', { field: t('ledger.fields.fuliId') })" :disabled="drawerMode === 'edit' && detail !== null && relatedSurveyCount(detail) > 0" :max-length="32" show-word-limit /></a-form-item>
+            <a-form-item field="functionName" :label="fieldLabel(t('ledger.fields.functionName'))" required><a-input v-model="form.functionName" :placeholder="t('ledger.form.inputPlaceholder', { field: t('ledger.fields.functionName') })" :max-length="50" show-word-limit /></a-form-item>
+            <a-form-item field="responsibles" :label="fieldLabel(t('ledger.fields.responsibles'))" required class="ledger-responsibles-form-item">
               <a-select v-model="selectedResponsibleKeys" multiple allow-search :max-tag-count="1" :trigger-props="{ contentClass: 'ledger-responsibles-dropdown' }" :placeholder="t('ledger.form.selectPlaceholder', { field: t('ledger.fields.responsibles') })">
                 <!-- 2026-10-29 用户裁决：选项样式改为「头像 + 姓名 + 所属部门」两行结构 -->
                 <a-option v-for="person in responsibleOptions" :key="responsibleKey(person)" :value="responsibleKey(person)" :label="`${person.name} | ${person.department}`">
@@ -787,14 +788,14 @@ async function confirmExport() {
                 </a-option>
               </a-select>
             </a-form-item>
-            <a-form-item field="developmentLocation" :label="t('ledger.fields.developmentLocation')" required><a-select v-model="form.developmentLocation" :placeholder="t('ledger.filters.select')"><a-option value="china">{{ t('ledger.locations.china') }}</a-option><a-option value="germany">{{ t('ledger.locations.germany') }}</a-option></a-select></a-form-item>
+            <a-form-item field="developmentLocation" :label="fieldLabel(t('ledger.fields.developmentLocation'))" required><a-select v-model="form.developmentLocation" :placeholder="t('ledger.filters.select')"><a-option value="china">{{ t('ledger.locations.china') }}</a-option><a-option value="germany">{{ t('ledger.locations.germany') }}</a-option></a-select></a-form-item>
             <!-- master ECU：天枢「零部件」下拉（编号-名称，2026-10-29），选中后带入子功能与控制器回显 -->
-            <a-form-item field="masterEcu" :label="t('ledger.fields.masterEcu')">
+            <a-form-item field="masterEcu" :label="fieldLabel(t('ledger.fields.masterEcu'))">
               <a-select v-model="form.masterEcu" allow-clear :placeholder="t('ledger.form.selectPlaceholder', { field: t('ledger.fields.masterEcu') })" @change="onMasterEcuChange">
                 <a-option v-for="option in formMasterEcuOptions" :key="option" :value="option">{{ option }}</a-option>
               </a-select>
             </a-form-item>
-            <a-form-item field="functionDescription" :label="t('ledger.fields.functionDescription')" class="ledger-form-item--full"><a-textarea v-model="form.functionDescription" :placeholder="t('ledger.form.inputPlaceholder', { field: t('ledger.fields.functionDescription') })" :max-length="200" show-word-limit :auto-size="{ minRows: 2, maxRows: 4 }" /></a-form-item>
+            <a-form-item field="functionDescription" :label="fieldLabel(t('ledger.fields.functionDescription'))" class="ledger-form-item--full"><a-textarea v-model="form.functionDescription" :placeholder="t('ledger.form.inputPlaceholder', { field: t('ledger.fields.functionDescription') })" :max-length="200" show-word-limit :auto-size="{ minRows: 2, maxRows: 4 }" /></a-form-item>
           </div>
         </div>
         <div class="ledger-drawer-group">
@@ -861,7 +862,7 @@ async function confirmExport() {
       <template #footer><a-button class="app-btn-neutral" :disabled="exporting" @click="exportOpen = false">{{ t('ledger.exportNotice.cancel') }}</a-button><a-button type="primary" :loading="exporting" @click="confirmExport">{{ t('ledger.exportNotice.confirm') }}</a-button></template>
     </a-modal>
 
-    <!-- 批量导入抽屉：上传拖拽区 + 注意事项同组（注意事项子块 #F8FBFF、16px 内边距，下载模版在子块外） -->
+    <!-- 批量导入抽屉：上传拖拽区 + 注意事项同组（注意事项子块 var(--app-import-help-surface)、16px 内边距，下载模版在子块外） -->
     <a-drawer class="ledger-drawer" :visible="importOpen" :width="Math.min(560, viewportWidth - 24)" :mask-closable="!importing" :title="t('ledger.import.title')" @cancel="!importing && (importOpen = false)">
       <div class="ledger-drawer-group">
         <div class="ledger-import-dropzone" role="button" tabindex="0" :aria-label="t('ledger.import.file')" @click="fileInput?.click()" @keydown.enter.prevent="fileInput?.click()" @keydown.space.prevent="fileInput?.click()" @dragover.prevent @drop.prevent="onDropFile">
@@ -1017,8 +1018,8 @@ async function confirmExport() {
 .ledger-import-hint, .ledger-import-file-name { max-width: 100%; margin: 0; color: var(--color-text-1); line-height: 24px; overflow-wrap: anywhere; }
 .ledger-import-file-name { font-size: 18px; }
 .ledger-import-line { margin: 0; line-height: 22px; }
-/* 注意事项子块：#F8FBFF 浅蓝底（2026-10-25 用户裁决），上下左右 16px 内边距；下载模版链接位于子块之外 */
-.ledger-import-notes { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 2px; background: #F8FBFF; }
+/* 注意事项子块：var(--app-import-help-surface) 浅蓝底（2026-10-25 用户裁决），上下左右 16px 内边距；下载模版链接位于子块之外 */
+.ledger-import-notes { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 2px; background: var(--app-import-help-surface); }
 :global(body[arco-theme='dark'] .ledger-import-notes) { background: var(--color-fill-2); }
 .ledger-import-notes-title { margin: 0; font-weight: 600; line-height: 22px; }
 .ledger-import-note { margin: 0; color: var(--color-text-2); line-height: 22px; }

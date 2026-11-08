@@ -1,0 +1,21 @@
+{
+  "reviewed": "2026-11-07",
+  "reviewer": "Codex",
+  "reviewMethod": "Contact sheets of all 12 locale/theme/viewport pattern screenshots inspected for layout, clipping, color mapping and hierarchy",
+  "environment": "macOS arm64, Playwright 1.65.0, bundled Chromium, reduced motion, deviceScaleFactor 1",
+  "scope": "Development pattern route only; browser report records additional interaction and real-route checks",
+  "screenshots": {
+    "1440-en-US-dark.png": "a2c151f60486899a4db7682470d39f52692aba5bf5639a0ad0dcf2a5fcf41bee",
+    "1440-en-US-light.png": "c66aa59a47da774b88533e83a9a60fb2444e49803262d2844471836cd04b42f9",
+    "1440-zh-CN-dark.png": "e27cd2ee6671ae4fff9529b1cb7931a235b712b4c006e0d8f2de0785c8b60c0f",
+    "1440-zh-CN-light.png": "ad7ff0d813aabbf770d630e8aca5f33a3b24fd2d31a1e501cd3fba26fce85797",
+    "375-en-US-dark.png": "f3d9c8126ffd9509a2efb24fae19492fb11732874951defd5438715f3493fa74",
+    "375-en-US-light.png": "3525f02ccff5f3a970e9959a94e643e69eb0713e7845e7174b21b2b4e1d66fb8",
+    "375-zh-CN-dark.png": "2d88b7a3d6e6491180e9bfb071677d36c4cff84d9a8e55289a3598b1a801d56b",
+    "375-zh-CN-light.png": "42a6f3a4341ff0d6e5388685e054e0ab11a0a6587abe4934c415843b0810f218",
+    "900-en-US-dark.png": "e5d35632a2e0a18ac2384f0707bd782bae74d80a8adbee23e6be53e1db737f32",
+    "900-en-US-light.png": "1143a5410806189fa9894cacbe9eae657b57e575e2b4c3072b30af61c67384c0",
+    "900-zh-CN-dark.png": "c14f882867154ec2571442342a6095476254f62f48a2c9d5fc300c53b52a05be",
+    "900-zh-CN-light.png": "d49e56d205ed88b0c3f209605886e3b5ce14b21bcd8a05e2160b16eaae4d7f67"
+  }
+}

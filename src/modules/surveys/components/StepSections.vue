@@ -364,7 +364,7 @@ async function exportSections() {
           <div v-for="field in fields(def.key)" :key="field.code" class="ss-field" :class="field.carried ? `ss-field-${shade(field)}` : 'ss-field-unmapped'">
             <div class="ss-field-head">
               <span class="ss-field-code">{{ field.code }}</span>
-              <label class="ss-field-label" :for="`survey-${def.key}-${field.code}`">
+              <label class="ss-field-label app-field-label" :for="`survey-${def.key}-${field.code}`">
                 {{ locale === 'zh-CN' ? field.labelZh : field.labelEn }}
               </label>
             </div>
@@ -413,7 +413,7 @@ async function exportSections() {
     <!-- 整体备注（不参与着色与统计，随问卷本地草稿保存） -->
     <section class="ss-card ss-overall" :aria-label="t('surveys.workspace.stepSections.overallNote')">
       <label class="ss-overall-label" for="survey-overall-note">
-        {{ t('surveys.workspace.stepSections.overallNote') }}
+        <span class="app-field-label">{{ t('surveys.workspace.stepSections.overallNote') }}</span>
         <span class="ss-overall-hint">{{ t('surveys.workspace.stepSections.overallNoteHint') }}</span>
       </label>
       <a-textarea id="survey-overall-note" v-model="note" :placeholder="t('surveys.workspace.stepSections.overallNotePlaceholder')"

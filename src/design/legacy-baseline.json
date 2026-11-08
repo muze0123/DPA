@@ -1,0 +1,310 @@
+{
+  "captured": "2026-11-07",
+  "source": "Snapshot of existing source before design-system rollout",
+  "policy": "Historical occurrences remain visible. Adding allowances requires explicit review.",
+  "fingerprints": {},
+  "resolvedAt": "2026-11-07",
+  "resolvedFindings": [
+    {
+      "file": "src/layouts/GlobalAssistant.vue",
+      "rule": "literal-color",
+      "snippet": "box-shadow: 0 4px 12px rgba(0, 0, 0, .16)",
+      "line": 107
+    },
+    {
+      "file": "src/layouts/GlobalAssistant.vue",
+      "rule": "literal-color",
+      "snippet": "box-shadow: 0 8px 28px rgba(0, 0, 0, .18)",
+      "line": 115
+    },
+    {
+      "file": "src/modules/compliance/pages/RuleVersionConfigPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: var(--color-warning, #F77234)",
+      "line": 1311
+    },
+    {
+      "file": "src/modules/compliance/pages/RuleVersionConfigPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: var(--app-color-danger, #F53F3F)",
+      "line": 1324
+    },
+    {
+      "file": "src/modules/compliance/pages/RuleVersionConfigPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: var(--app-color-danger, #F53F3F)",
+      "line": 1326
+    },
+    {
+      "file": "src/modules/compliance/pages/RuleVersionConfigPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: var(--color-text-4, #C9CDD4)",
+      "line": 1385
+    },
+    {
+      "file": "src/modules/compliance/pages/RuleVersionConfigPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: var(--app-color-danger, #F53F3F)",
+      "line": 1392
+    },
+    {
+      "file": "src/modules/compliance/pages/RuleVersionsPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #F8FBFF",
+      "line": 815
+    },
+    {
+      "file": "src/modules/dictionary/pages/DictionaryMaterialsPage.vue",
+      "rule": "imperative-confirmation",
+      "snippet": "Modal.confirm({ title: t('library.discardTitle'), content: t('library.discardBody'),\n    okText: t('library.discard'), cancelText: t('library.cancel'), onOk: closeEditor })",
+      "line": 214
+    },
+    {
+      "file": "src/modules/dictionary/pages/DictionaryMaterialsPage.vue",
+      "rule": "imperative-confirmation",
+      "snippet": "Modal.confirm({ title: t('library.delete'), content: t('library.deleteConfirm', { name: item.name }),\n    okText: t('library.delete'), cancelText: t('library.cancel'), onOk: () => {\n      commit(kind === 'dictionary' ? dictionary.filter((row) => row.id !== item.id) : [...dictionary],\n        kind === 'materials' ? materials.filter((row) => row.id !== item.id) : [...materials], 'library.deletedLocal');\n    } })",
+      "line": 330
+    },
+    {
+      "file": "src/modules/function-ledger/pages/FunctionLedgerPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #F8FBFF",
+      "line": 1022
+    },
+    {
+      "file": "src/modules/surveys/components/CreateTaskDrawer.vue",
+      "rule": "literal-color",
+      "snippet": "color: #fff",
+      "line": 316
+    },
+    {
+      "file": "src/modules/surveys/components/StepMatching.vue",
+      "rule": "literal-color",
+      "snippet": "--sm-auto-na-bg: #E7E6E6",
+      "line": 885
+    },
+    {
+      "file": "src/modules/surveys/components/StepMatching.vue",
+      "rule": "literal-color",
+      "snippet": "--sm-manual-na-bg: #D0CECE",
+      "line": 886
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #f2f3f5",
+      "line": 219
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #1d2129",
+      "line": 220
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "border: 1px solid #d9d9d9",
+      "line": 237
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #ffffff",
+      "line": 239
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #1d2129",
+      "line": 240
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "border-color: #005bf5",
+      "line": 246
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #005bf5",
+      "line": 246
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "outline: 2px solid #005bf5",
+      "line": 247
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "border-color: #005bf5",
+      "line": 248
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #005bf5",
+      "line": 248
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #ffffff",
+      "line": 248
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #3f7ff8",
+      "line": 249
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #ffffff",
+      "line": 249
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #ffffff",
+      "line": 258
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08)",
+      "line": 259
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #4e5969",
+      "line": 262
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "border-bottom: 2px solid #1d2129",
+      "line": 265
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #86909c",
+      "line": 268
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #4e5969",
+      "line": 271
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "border-left: 3px solid #1d2129",
+      "line": 275
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #4e5969",
+      "line": 277
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #4e5969",
+      "line": 283
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "border: 1px solid #c9cdd4",
+      "line": 288
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #f2f3f5",
+      "line": 289
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #86909c",
+      "line": 296
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #4e5969",
+      "line": 299
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #86909c",
+      "line": 300
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #86909c",
+      "line": 307
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #4e5969",
+      "line": 310
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #86909c",
+      "line": 312
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "border-top: 1px solid #c9cdd4",
+      "line": 315
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "color: #86909c",
+      "line": 315
+    },
+    {
+      "file": "src/modules/surveys/pages/SurveyPrintPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #ffffff",
+      "line": 323
+    },
+    {
+      "file": "src/modules/templates/pages/TemplatesPage.vue",
+      "rule": "literal-color",
+      "snippet": "background: #F8FBFF",
+      "line": 1167
+    },
+    {
+      "file": "src/styles/global.css",
+      "rule": "literal-color",
+      "snippet": "color: #FFFFFF",
+      "line": 315
+    },
+    {
+      "file": "src/styles/global.css",
+      "rule": "literal-color",
+      "snippet": "color: #fff",
+      "line": 457
+    }
+  ],
+  "findings": []
+}

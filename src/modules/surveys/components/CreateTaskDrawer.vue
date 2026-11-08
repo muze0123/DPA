@@ -165,7 +165,7 @@ function cancelCreate() {
       <div class="task-drawer-group">
         <h2 class="task-section-heading">{{ t('surveys.taskCreate.sectionBasics') }}</h2>
         <a-form-item field="taskName" required>
-          <template #label><span class="task-field-label">{{ t('surveys.taskCreate.name') }}</span></template>
+          <template #label><span class="task-field-label app-field-label">{{ t('surveys.taskCreate.name') }}</span></template>
           <a-input
             v-model="form.taskName"
             :max-length="50"
@@ -175,7 +175,7 @@ function cancelCreate() {
         </a-form-item>
 
         <a-form-item field="taskDescription">
-          <template #label><span class="task-field-label">{{ t('surveys.taskCreate.description') }}</span></template>
+          <template #label><span class="task-field-label app-field-label">{{ t('surveys.taskCreate.description') }}</span></template>
           <a-textarea
             v-model="form.taskDescription"
             :max-length="200"
@@ -186,7 +186,7 @@ function cancelCreate() {
         </a-form-item>
 
         <a-form-item field="priority" required>
-          <template #label><span class="task-field-label">{{ t('surveys.taskCreate.priority') }}</span></template>
+          <template #label><span class="task-field-label app-field-label">{{ t('surveys.taskCreate.priority') }}</span></template>
           <a-radio-group v-model="form.priority">
             <a-radio value="low">{{ t('surveys.priorities.low') }}</a-radio>
             <a-radio value="medium">{{ t('surveys.priorities.medium') }}</a-radio>
@@ -196,7 +196,7 @@ function cancelCreate() {
         </a-form-item>
 
         <a-form-item field="deadline">
-          <template #label><span class="task-field-label">{{ t('surveys.taskCreate.deadline') }}</span></template>
+          <template #label><span class="task-field-label app-field-label">{{ t('surveys.taskCreate.deadline') }}</span></template>
           <a-date-picker
             v-model="form.deadline"
             value-format="YYYY-MM-DD"
@@ -206,7 +206,7 @@ function cancelCreate() {
         </a-form-item>
 
         <a-form-item field="attachments">
-          <template #label><span class="task-field-label">{{ t('surveys.taskCreate.attachments') }}</span></template>
+          <template #label><span class="task-field-label app-field-label">{{ t('surveys.taskCreate.attachments') }}</span></template>
           <div class="task-upload">
             <a-upload
               draggable
@@ -313,7 +313,7 @@ function cancelCreate() {
 .task-flow-node { overflow: hidden; border: 1px solid var(--color-primary-light-2); border-radius: 4px; background: var(--app-surface); }
 .task-flow-node.is-review { border: 2px solid rgb(var(--warning-6)); }
 .task-flow-header { margin: 0; padding: 6px 12px; background: var(--color-primary-light-1); color: var(--color-text-1); font-size: 14px; font-weight: 600; line-height: 22px; }
-.task-flow-node.is-review .task-flow-header { background: rgb(var(--warning-6)); color: #fff; }
+.task-flow-node.is-review .task-flow-header { background: rgb(var(--warning-6)); color: var(--app-on-accent); }
 .task-flow-detail { margin: 0; padding: 8px 12px; background: var(--app-surface); color: var(--color-text-1); font-size: 14px; line-height: 22px; }
 .task-flow-connector { flex: none; width: 2px; height: 16px; margin: 0 auto; background: var(--color-primary-light-2); }
 .task-flow-edit { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 40px; margin-top: 4px; padding: 0 12px; border: 0; border-radius: 2px; color: var(--color-text-2); background: var(--color-fill-1); cursor: pointer; font: inherit; font-size: 14px; line-height: 22px; }

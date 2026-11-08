@@ -703,37 +703,37 @@ const localeTag = computed(() => (locale.value === 'en-US' ? 'en' : 'zh'));
         <p class="se-editor-summary">{{ editorRow.summary }}</p>
 
         <label class="se-field">
-          <span class="se-label">{{ t('surveys.workspace.evidence.modalSatisfied') }}<em aria-hidden="true">*</em></span>
+          <span class="se-label app-field-label">{{ t('surveys.workspace.evidence.modalSatisfied') }}<em aria-hidden="true">*</em></span>
           <a-textarea v-model="draft.satisfied" :auto-size="{ minRows: 2, maxRows: 4 }" :placeholder="t('surveys.workspace.evidence.modalSatisfiedHint')" />
         </label>
         <label class="se-field">
-          <span class="se-label">{{ t('surveys.workspace.evidence.modalHow') }}<em aria-hidden="true">*</em></span>
+          <span class="se-label app-field-label">{{ t('surveys.workspace.evidence.modalHow') }}<em aria-hidden="true">*</em></span>
           <a-textarea v-model="draft.how" :auto-size="{ minRows: 2, maxRows: 4 }" :placeholder="t('surveys.workspace.evidence.modalHowHint')" />
         </label>
         <label class="se-field">
-          <span class="se-label">{{ t('surveys.workspace.evidence.modalTestInput') }}</span>
+          <span class="se-label app-field-label">{{ t('surveys.workspace.evidence.modalTestInput') }}</span>
           <a-textarea v-model="draft.testInput" :auto-size="{ minRows: 2, maxRows: 4 }" :placeholder="t('surveys.workspace.evidence.modalTestInputHint')" />
         </label>
 
         <div class="se-field-row">
           <label class="se-field">
-            <span class="se-label">{{ t('surveys.workspace.evidence.modalProvided') }}</span>
+            <span class="se-label app-field-label">{{ t('surveys.workspace.evidence.modalProvided') }}</span>
             <a-date-picker v-model="draft.providedAt" value-format="YYYY-MM-DD" :placeholder="t('surveys.workspace.evidence.modalDatePlaceholder')" />
           </label>
           <label class="se-field">
-            <span class="se-label">{{ t('surveys.workspace.evidence.modalExpected') }}</span>
+            <span class="se-label app-field-label">{{ t('surveys.workspace.evidence.modalExpected') }}</span>
             <a-date-picker v-model="draft.expectedAt" value-format="YYYY-MM-DD" :placeholder="t('surveys.workspace.evidence.modalDatePlaceholder')" />
           </label>
         </div>
         <p class="se-hint">{{ t('surveys.workspace.evidence.modalTimeRule') }}</p>
 
         <label class="se-field">
-          <span class="se-label">{{ t('surveys.workspace.evidence.modalLinks') }}</span>
+          <span class="se-label app-field-label">{{ t('surveys.workspace.evidence.modalLinks') }}</span>
           <a-textarea v-model="draft.linksText" :auto-size="{ minRows: 2, maxRows: 4 }" :placeholder="t('surveys.workspace.evidence.modalLinksHint')" />
         </label>
 
         <div class="se-field">
-          <span class="se-label">{{ t('surveys.workspace.evidence.modalFiles') }}</span>
+          <span class="se-label app-field-label">{{ t('surveys.workspace.evidence.modalFiles') }}</span>
           <div class="se-file-row">
             <a-button size="small" class="app-btn-neutral" data-testid="se-pick-file" @click="pickFiles">
               {{ t('surveys.workspace.evidence.modalChooseFile') }}
@@ -752,7 +752,7 @@ const localeTag = computed(() => (locale.value === 'en-US' ? 'en' : 'zh'));
         </div>
 
         <div class="se-field">
-          <span class="se-label">{{ t('surveys.workspace.evidence.modalMaterials') }}</span>
+          <span class="se-label app-field-label">{{ t('surveys.workspace.evidence.modalMaterials') }}</span>
           <ul class="se-modal-materials">
             <li v-for="name in editorRow.materialNames" :key="name">{{ name }}</li>
             <li v-if="!editorRow.materialNames.length" class="se-muted">{{ t('surveys.workspace.evidence.modalNoMaterials') }}</li>

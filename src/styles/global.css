@@ -312,7 +312,7 @@ body .arco-textarea-wrapper.arco-textarea-disabled {
 }
 .app-pagination .pagination-number.active {
   border-color: var(--app-color-primary);
-  color: #FFFFFF;
+  color: var(--app-on-accent);
   background-color: var(--app-color-primary);
   cursor: default;
 }
@@ -454,7 +454,7 @@ body .arco-textarea-wrapper.arco-textarea-disabled {
 .shell-task-trigger { position: relative; }
 .shell-task-badge {
   position: absolute; top: 3px; right: 3px; min-width: 16px; height: 16px; padding: 0 4px;
-  border-radius: 8px; background: rgb(var(--danger-6)); color: #fff;
+  border-radius: 8px; background: rgb(var(--danger-6)); color: var(--app-on-accent);
   font-size: 10px; font-weight: 600; line-height: 16px; text-align: center;
 }
 .shell-option-selected { color: rgb(var(--primary-6)); background: var(--color-primary-light-1); }
@@ -543,6 +543,16 @@ body .arco-textarea-wrapper.arco-textarea-disabled {
 .app-detail-row { display: grid; grid-template-columns: minmax(112px, max-content) minmax(0, 1fr); gap: 16px; align-items: start; }
 .app-detail-label { color: var(--color-text-2); line-height: 22px; }
 .app-detail-value { color: var(--color-text-1); line-height: 22px; overflow-wrap: anywhere; white-space: pre-line; }
+
+/* ---------------------------------------------- 编辑态字段标签冒号 */
+/* 2026-11-06 用户裁决（DESIGN.md · Form field layout）：添加/编辑抽屉、弹窗、
+   页面级编辑/配置/填写表单的字段标签，文字右侧统一显示冒号。zh-CN 全角「：」、
+   en-US 半角「:」，由 locale store 同步的 <html lang> 驱动。类挂在字段文本自身，
+   避开标签尾部的必填星号 / 辅助提示等附加元素。不适用：列表筛选条条件标签、
+   只读详情 .app-detail-label、表格表头、复选框/开关/单选的选项文字。
+   Arco <a-form-item> 走 src/shared/fieldLabel.ts 的 fieldLabel()。 */
+.app-field-label::after { content: '：'; }
+html[lang="en-US"] .app-field-label::after { content: ':'; }
 
 .default-layout-content { min-height: calc(100vh - 56px); }
 

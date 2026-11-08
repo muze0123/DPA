@@ -10,6 +10,7 @@ const i18n = createI18n({
   fallbackLocale: DEFAULT_LOCALE,
   messages: {
     'zh-CN': {
+      designSystem: {"close": "关闭","pagination": {"navigation": "列表分页", "size": "每页条数", "perPage": "{count} 条/页", "previous": "上一页", "next": "下一页", "jump": "跳至", "pages": "/{count} 页"},"language": "切换语言", "theme": "切换主题", "state": "页面状态", "states": {"ready": "正常", "empty": "空数据", "loading": "加载中", "error": "加载失败"}, "keyword": "关键词", "search": "查询", "reset": "重置", "list": "设计模式记录", "total": "共 {count} 条", "edit": "编辑示例", "error": "本地模拟加载失败", "retry": "重试", "id": "编号", "name": "名称", "noMatch": "暂无匹配结果", "empty": "暂无数据", "detail": "详情示例", "saved": "已更新本地示例", "required": "请输入名称", "cancel": "取消", "save": "保存", "discard": "确定放弃修改吗？", "confirm": "确定", "acknowledge": "我知道了"},
       overview: {
         notices: {
           system: { title: '系统消息', description: '系统安全巡检已完成，请查看最新检测结果。' },
@@ -1191,6 +1192,7 @@ const i18n = createI18n({
       },
     },
     'en-US': {
+      designSystem: {"close": "Close","pagination": {"navigation": "List pagination", "size": "Rows per page", "perPage": "{count} / page", "previous": "Previous page", "next": "Next page", "jump": "Jump to", "pages": "/{count} pages"},"language": "Switch language", "theme": "Switch theme", "state": "Page state", "states": {"ready": "Ready", "empty": "Empty", "loading": "Loading", "error": "Error"}, "keyword": "Keyword", "search": "Search", "reset": "Reset", "list": "Design pattern records", "total": "{count} records", "edit": "Edit example", "error": "Simulated local loading failure", "retry": "Retry", "id": "ID", "name": "Name", "noMatch": "No matching records", "empty": "No records", "detail": "Detail example", "saved": "Local example updated", "required": "Enter a name", "cancel": "Cancel", "save": "Save", "discard": "Discard your changes?", "confirm": "Confirm", "acknowledge": "Got it"},
       overview: {
         notices: {
           system: { title: 'System message', description: 'The security check is complete. Review the latest findings.' },

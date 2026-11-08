@@ -5,13 +5,22 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "node scripts/design-check.mjs && vue-tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "vue-tsc --noEmit",
-    "verify": "vue-tsc --noEmit && node scripts/i18n.mjs check",
+    "verify": "vue-tsc --noEmit && node scripts/i18n.mjs check && node scripts/design-check.mjs && node --test scripts/design.test.mjs",
     "i18n:extract": "node scripts/i18n.mjs extract",
     "i18n:check": "node scripts/i18n.mjs check",
-    "i18n:cjk": "node scripts/i18n.mjs cjk"
+    "i18n:cjk": "node scripts/i18n.mjs cjk",
+    "design:tokens": "node scripts/design-tokens.mjs",
+    "design:tokens:check": "node scripts/design-tokens.mjs --check",
+    "design:check": "node scripts/design-check.mjs",
+    "design:audit": "node scripts/design-check.mjs --strict",
+    "design:test": "node --test scripts/design.test.mjs",
+    "design:context": "node scripts/design-context.mjs",
+    "design:browser": "node scripts/design-browser.mjs",
+    "design:sync": "node scripts/design-sync.mjs",
+    "check": "pnpm verify && pnpm build && pnpm design:browser"
   },
   "dependencies": {
     "@arco-design/web-vue": "2.58.0",
@@ -29,6 +38,7 @@
     "@types/papaparse": "^5.5.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "arco-cli": "1.27.5",
+    "playwright": "1.65.0",
     "typescript": "^5.7.2",
     "vite": "^6.4.4",
     "vue-tsc": "^2.2.0"

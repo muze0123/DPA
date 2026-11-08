@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "peers": [
+    "../../开放数据平台/OpenData",
+    "../../开放数据平台/HMG"
+  ],
+  "files": [
+    "AI-DESIGN.md",
+    "src/design/tokens.core.json",
+    "src/design/tokens.core.css",
+    "src/design/components/AppListToolbar.vue",
+    "src/design/components/AppFormLayout.vue",
+    "src/design/components/AppFieldLabel.vue",
+    "src/design/components/AppDetailList.vue",
+    "src/shared/components/ConfirmDialog.vue",
+    "src/design/patterns/DesignPatternsPage.vue",
+    "src/design/patterns/README.md",
+    "scripts/design-tokens.mjs",
+    "scripts/design-lib.mjs",
+    "scripts/design-check.mjs",
+    "scripts/design-context.mjs",
+    "scripts/design-sync.mjs",
+    "scripts/design.test.mjs",
+    "scripts/design-browser.mjs",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "src/design/components/AppPagination.vue",
+    "src/design/tokens.schema.json"
+  ]
+}

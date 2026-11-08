@@ -7,7 +7,7 @@
  * 待审核；右 = 参与条目 n/64 + 数据类型分析入口 + 阶段操作按钮；下沿 = 三色图例与
  * 人工优先提示）+ 左栏 8 分组导航（锚点定位）+ 主区分组条款卡列表。
  * 分组标题条 = 左侧主色竖条 + 浅蓝底（显示 N 条），标题取标准条款库二级节原文；
- * 条款卡配色：自动初筛不适用 #E7E6E6、人工确认不适用 #D0CECE、人工与自动不一致
+ * 条款卡配色：自动初筛不适用 var(--app-matching-auto-na)、人工确认不适用 var(--app-matching-manual-na)、人工与自动不一致
  * 红框（用户指定色值）。条款卡五段：头（条款号 + 主题 + 徽标）→ 原文（3 行折叠）→
  * 元信息/触发依据 → 安全要求展开表（编号/内容/依据文本，数据 = 条目目录）→
  * 分阶段页脚：待确认 = 人工确认下拉（未确认/适用/不适用）+ 判否原因必填（D5/D6）；
@@ -209,7 +209,7 @@ function finalBadgeColor(row: ClauseRow): string {
 
 /**
  * 卡片配色（2026-10-27 裁决，优先级从高到低）：
- * 差异 = 红框 > 人工确认不适用 = #D0CECE > 自动初筛不适用 = #E7E6E6 >
+ * 差异 = 红框 > 人工确认不适用 = var(--app-matching-manual-na) > 自动初筛不适用 = var(--app-matching-auto-na) >
  * 适用 = 绿色左条 > 待核验 = 橙色左条 > 白卡。
  */
 function cardClass(row: ClauseRow): string[] {
@@ -663,7 +663,7 @@ const recalcCount = ref(0);
             <!-- 页脚 · 待确认阶段：人工确认下拉 + 判否原因必填（D5/D6） -->
             <div v-if="confirming" class="sm-confirm">
               <label class="sm-field">
-                <span class="sm-field-label">{{ t('surveys.workspace.matching.confirmTitle') }}</span>
+                <span class="sm-field-label app-field-label">{{ t('surveys.workspace.matching.confirmTitle') }}</span>
                 <a-select
                   class="sm-confirm-select"
                   :model-value="radioValue(row)"
@@ -691,7 +691,7 @@ const recalcCount = ref(0);
             <!-- 页脚 · 匹配审核中：审批人通过/拒绝 + 备注 + 留痕 -->
             <div v-else-if="reviewingStage" class="sm-confirm">
               <label class="sm-field">
-                <span class="sm-field-label">{{ t('surveys.workspace.matching.confirmTitle') }}</span>
+                <span class="sm-field-label app-field-label">{{ t('surveys.workspace.matching.confirmTitle') }}</span>
                 <a-select class="sm-confirm-select" disabled :model-value="row.manual?.value ?? ''">
                   <a-option v-if="row.manual" :value="row.manual.value">
                     {{ t(`surveys.workspace.matching.confirm${row.manual.value === 'applicable' ? 'Applicable' : 'NotApplicable'}`) }}
@@ -705,11 +705,11 @@ const recalcCount = ref(0);
                 disabled
               />
               <label class="sm-field">
-                <span class="sm-field-label">{{ t('surveys.workspace.matching.review.reviewerLabel') }}</span>
+                <span class="sm-field-label app-field-label">{{ t('surveys.workspace.matching.review.reviewerLabel') }}</span>
                 <span class="sm-field-static">{{ record.reviewer || '—' }}</span>
               </label>
               <label class="sm-field sm-field-note">
-                <span class="sm-field-label">{{ t('surveys.workspace.matching.review.noteLabel') }}</span>
+                <span class="sm-field-label app-field-label">{{ t('surveys.workspace.matching.review.noteLabel') }}</span>
                 <a-input
                   class="sm-note-input"
                   :model-value="noteOf(row)"
@@ -739,7 +739,7 @@ const recalcCount = ref(0);
             <!-- 页脚 · 只读阶段：审核留痕展示 -->
             <div v-else class="sm-confirm sm-confirm-readonly">
               <label class="sm-field">
-                <span class="sm-field-label">{{ t('surveys.workspace.matching.confirmTitle') }}</span>
+                <span class="sm-field-label app-field-label">{{ t('surveys.workspace.matching.confirmTitle') }}</span>
                 <span class="sm-field-static">
                   {{ row.manual
                     ? t(`surveys.workspace.matching.confirm${row.manual.value === 'applicable' ? 'Applicable' : 'NotApplicable'}`)
@@ -749,7 +749,7 @@ const recalcCount = ref(0);
               <span v-if="row.manual?.reason" class="sm-field-static sm-field-reason">{{ row.manual.reason }}</span>
               <template v-if="row.review">
                 <label class="sm-field">
-                  <span class="sm-field-label">{{ t('surveys.workspace.matching.review.reviewerLabel') }}</span>
+                  <span class="sm-field-label app-field-label">{{ t('surveys.workspace.matching.review.reviewerLabel') }}</span>
                   <span class="sm-field-static">{{ row.review.by || '—' }}</span>
                 </label>
                 <span v-if="row.review.note" class="sm-field-static sm-field-reason">{{ row.review.note }}</span>
@@ -882,8 +882,8 @@ const recalcCount = ref(0);
 <style scoped>
 .step-matching {
   /* 2026-10-27 用户裁决指定色值：自动初筛不适用 / 人工确认不适用 */
-  --sm-auto-na-bg: #E7E6E6;
-  --sm-manual-na-bg: #D0CECE;
+  --sm-auto-na-bg: var(--app-matching-auto-na);
+  --sm-manual-na-bg: var(--app-matching-manual-na);
   display: flex; flex-direction: column; gap: 16px; min-width: 0; font-size: 14px; color: var(--color-text-1);
 }
 .sm-card { min-width: 0; padding: 16px; border-radius: 2px; background: var(--app-surface); }
@@ -941,7 +941,7 @@ const recalcCount = ref(0);
 }
 .sm-group-count { font-weight: 400; }
 
-/* 条款卡：白底细框；状态配色见 cardClass（用户指定 #E7E6E6 / #D0CECE / 红框） */
+/* 条款卡：白底细框；状态配色见 cardClass（用户指定 var(--app-matching-auto-na) / var(--app-matching-manual-na) / 红框） */
 .sm-card-item {
   display: flex; flex-direction: column; gap: 8px; padding: 12px 16px;
   border: 1px solid var(--app-control-border); border-radius: 2px; background: var(--app-surface);

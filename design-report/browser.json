@@ -1,0 +1,154 @@
+{
+  "project": "功能数据安全合规自评",
+  "status": "passed",
+  "assertions": [
+    "1440 locale zh-CN",
+    "1440 zh-CN title geometry false",
+    "1440 zh-CN viewport overflow false",
+    "1440 zh-CN theme mapping false",
+    "Visual baseline 1440-zh-CN-light",
+    "1440 zh-CN title geometry true",
+    "1440 zh-CN viewport overflow true",
+    "1440 zh-CN theme mapping true",
+    "Visual baseline 1440-zh-CN-dark",
+    "1440 locale en-US",
+    "1440 en-US title geometry false",
+    "1440 en-US viewport overflow false",
+    "1440 en-US theme mapping false",
+    "Visual baseline 1440-en-US-light",
+    "1440 en-US title geometry true",
+    "1440 en-US viewport overflow true",
+    "1440 en-US theme mapping true",
+    "Visual baseline 1440-en-US-dark",
+    "900 locale zh-CN",
+    "900 zh-CN title geometry false",
+    "900 zh-CN viewport overflow false",
+    "900 zh-CN theme mapping false",
+    "Visual baseline 900-zh-CN-light",
+    "900 zh-CN title geometry true",
+    "900 zh-CN viewport overflow true",
+    "900 zh-CN theme mapping true",
+    "Visual baseline 900-zh-CN-dark",
+    "900 locale en-US",
+    "900 en-US title geometry false",
+    "900 en-US viewport overflow false",
+    "900 en-US theme mapping false",
+    "Visual baseline 900-en-US-light",
+    "900 en-US title geometry true",
+    "900 en-US viewport overflow true",
+    "900 en-US theme mapping true",
+    "Visual baseline 900-en-US-dark",
+    "375 locale zh-CN",
+    "375 zh-CN title geometry false",
+    "375 zh-CN viewport overflow false",
+    "375 zh-CN theme mapping false",
+    "Visual baseline 375-zh-CN-light",
+    "375 zh-CN title geometry true",
+    "375 zh-CN viewport overflow true",
+    "375 zh-CN theme mapping true",
+    "Visual baseline 375-zh-CN-dark",
+    "375 locale en-US",
+    "375 en-US title geometry false",
+    "375 en-US viewport overflow false",
+    "375 en-US theme mapping false",
+    "Visual baseline 375-en-US-light",
+    "375 en-US title geometry true",
+    "375 en-US viewport overflow true",
+    "375 en-US theme mapping true",
+    "Visual baseline 375-en-US-dark",
+    "English saved locale on refresh",
+    "Search no-match state",
+    "Filter reset",
+    "Second page records",
+    "Explicit empty state",
+    "Loading state indicator",
+    "Error state",
+    "Error recovery",
+    "Form control column is 500px",
+    "Required validation preserves drawer",
+    "Confirmation 560px and minimum 320px (560 x 320)",
+    "Cancel discard retains dirty input",
+    "English editable label punctuation",
+    "Local save feedback",
+    "Untouched drawer closes without discard prompt",
+    "Confirmed discard retains saved value",
+    "Chinese editable label punctuation",
+    "Saved locale on refresh",
+    "Real audit route shared toolbar and table",
+    "Real audit filter no-match state",
+    "Real audit export cancellation",
+    "Browser back to pattern route",
+    "Browser forward to audit route",
+    "Material discard cancellation retains changes",
+    "Material discard confirmation closes editor",
+    "Material delete cancellation preserves record",
+    "Material delete storage failure keeps confirmation open",
+    "Material delete storage failure preserves record",
+    "Console and runtime errors (0)"
+  ],
+  "screenshots": [
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/1440-zh-CN-light.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/1440-zh-CN-dark.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/1440-en-US-light.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/1440-en-US-dark.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/900-zh-CN-light.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/900-zh-CN-dark.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/900-en-US-light.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/900-en-US-dark.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/375-zh-CN-light.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/375-zh-CN-dark.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/375-en-US-light.png",
+    "/Users/zhangbin/Desktop/麦唐/功能数据安全合规自评/功能数据安全合规自评/design-report/screenshots/375-en-US-dark.png"
+  ],
+  "consoleErrors": [],
+  "baselineComparisons": [
+    {
+      "name": "1440-zh-CN-light",
+      "status": "matched"
+    },
+    {
+      "name": "1440-zh-CN-dark",
+      "status": "matched"
+    },
+    {
+      "name": "1440-en-US-light",
+      "status": "matched"
+    },
+    {
+      "name": "1440-en-US-dark",
+      "status": "matched"
+    },
+    {
+      "name": "900-zh-CN-light",
+      "status": "matched"
+    },
+    {
+      "name": "900-zh-CN-dark",
+      "status": "matched"
+    },
+    {
+      "name": "900-en-US-light",
+      "status": "matched"
+    },
+    {
+      "name": "900-en-US-dark",
+      "status": "matched"
+    },
+    {
+      "name": "375-zh-CN-light",
+      "status": "matched"
+    },
+    {
+      "name": "375-zh-CN-dark",
+      "status": "matched"
+    },
+    {
+      "name": "375-en-US-light",
+      "status": "matched"
+    },
+    {
+      "name": "375-en-US-dark",
+      "status": "matched"
+    }
+  ]
+}
