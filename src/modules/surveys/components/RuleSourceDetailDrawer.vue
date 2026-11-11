@@ -58,7 +58,7 @@ const usageMap = computed(() => templateUsage());
 function statusColor(status: TemplateStatus): string {
   return status === 'published' ? 'green' : 'gray';
 }
-/** 预览题目答案：统一单选「是 / 否 / 不确定」，仅展示不可选择（与问题库详情一致） */
+/** 预览题目答案：统一单选「是 / 否 / 待定」，仅展示不可选择（与问题库详情一致） */
 const answerOptions = computed(() => [
   { label: t('templates.preview.yes'), value: 'yes' },
   { label: t('templates.preview.no'), value: 'no' },

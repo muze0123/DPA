@@ -642,7 +642,7 @@ const previewActions = computed<PreviewAction[]>(() => {
   return actions;
 });
 
-/** 预览题目答案：统一单选「是 / 否 / 不确定」，仅展示不可选择 */
+/** 预览题目答案：统一单选「是 / 否 / 待定」，仅展示不可选择 */
 const answerOptions = computed(() => [
   { label: t('templates.preview.yes'), value: 'yes' },
   { label: t('templates.preview.no'), value: 'no' },

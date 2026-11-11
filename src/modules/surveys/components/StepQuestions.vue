@@ -3,7 +3,7 @@
  * 问卷工作区 · 步骤 2「逐题作答」（05 方案 §2.1，2026-10-27 布局裁决）。
  *
  * 布局（用户裁决）：两栏 —— 左「题目导航」块（顶部并入作答进度：进度条 + 已答 n/总数 +
- * n 题不确定，标题「题目导航」删除），右侧主区为当前题大卡；
+ * n 题待定，标题「题目导航」删除），右侧主区为当前题大卡；
  * 原右栏作答进度卡删除，【保存草稿】【完成作答】【修改】按钮 Teleport 到容器面包屑右侧
  * 动作区（与其他子页面「操作在右上」的位置一致）。
  *
@@ -73,7 +73,7 @@ watch(codes, (next) => {
   }
 }, { immediate: true });
 
-/** 步骤 3 命中题徽标/不确定题提示回跳定位（?q=Qn，由容器 goToQuestion 写入） */
+/** 步骤 3 命中题徽标/待定题提示回跳定位（?q=Qn，由容器 goToQuestion 写入） */
 watch(() => route.query.q, (query) => {
   const code = String(Array.isArray(query) ? query[0] ?? '' : query ?? '');
   if (code && codes.value.includes(code)) activeCode.value = code;
@@ -139,7 +139,7 @@ async function saveDraft() {
   }
 }
 
-/** 完成作答：缺题拒绝并列题号定位；存在不确定 → 二次确认（按不适用处理） */
+/** 完成作答：缺题拒绝并列题号定位；存在待定 → 二次确认 */
 function complete() {
   if (completing.value) return;
   const missing = codes.value.filter((code) => !answers.value[code]);
@@ -287,7 +287,7 @@ function cancel() {
           <a-radio value="no">{{ t('surveys.workspace.questions.answerNo') }}</a-radio>
           <a-radio value="pending">{{ t('surveys.workspace.questions.answerPending') }}</a-radio>
         </a-radio-group>
-        <!-- 「不确定」的代价提示（05 §2.2）：琥珀说明紧贴单选组下方 -->
+        <!-- 「待定」提示（05 §2.2）：琥珀说明紧贴单选组下方 -->
         <p v-if="answers[activeQuestion.code] === 'pending'" class="sq-pending-hint">
           <IconExclamationCircle :size="14" aria-hidden="true" />
           <span>{{ t('surveys.workspace.questions.pendingHint') }}</span>
@@ -339,7 +339,7 @@ function cancel() {
       </footer>
     </section>
 
-    <!-- 不确定二次确认（05 §2.3）：允许提交，但须明确不确定按不适用处理 -->
+    <!-- 待定二次确认（05 §2.3）：允许提交，提醒相关条款可能需要核验 -->
     <a-modal
       :visible="pendingTarget.length > 0"
       :width="456"
@@ -376,7 +376,7 @@ function cancel() {
 .sq-nav { flex: none; width: 320px; display: flex; flex-direction: column; }
 .sq-main { flex: 1; display: flex; flex-direction: column; }
 
-/* 导航块顶部：作答进度（进度条 + 已答计数 + 不确定提示 + 模板信息） */
+/* 导航块顶部：作答进度（进度条 + 已答计数 + 待定提示 + 模板信息） */
 .sq-progress { flex: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
 .sq-progress-track { height: 8px; border-radius: 4px; background: var(--color-fill-3); overflow: hidden; }
 .sq-progress-fill { height: 100%; border-radius: 4px; background: var(--app-accent); transition: width 160ms ease-out; }
@@ -400,7 +400,7 @@ function cancel() {
 .sq-question-code { flex: none; margin-top: 2px; font-variant-numeric: tabular-nums; }
 .sq-question-title { margin: 0; color: var(--color-text-1); font-size: 16px; font-weight: 600; line-height: 24px; }
 
-/* 三态作答：标准圆形单选（是 / 否 / 不确定），选中即存 */
+/* 三态作答：标准圆形单选（是 / 否 / 待定），选中即存 */
 .sq-answer :deep(.arco-radio-group) { display: flex; flex-wrap: wrap; gap: 4px 24px; }
 .sq-pending-hint { display: flex; align-items: flex-start; gap: 6px; margin: 8px 0 0; color: rgb(var(--orange-6)); font-size: 12px; line-height: 20px; }
 .sq-pending-hint svg { flex: none; margin-top: 3px; }

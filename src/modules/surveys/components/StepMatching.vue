@@ -256,20 +256,28 @@ function showReasonOf(row: ClauseRow): boolean {
  * 避免下拉回弹导致用户无法补填原因（D5/D6 原因必填的输入路径）。
  */
 const localValues = ref<Record<string, '' | ClauseConfirm['value']>>({});
-function radioValue(row: ClauseRow): string {
-  return localValues.value[row.clause.no] ?? row.manual?.value ?? '';
+const savingConfirms = ref<Record<string, boolean>>({});
+function radioValue(row: ClauseRow): ClauseConfirm['value'] | undefined {
+  const local = localValues.value[row.clause.no];
+  return local === '' ? undefined : local ?? row.manual?.value;
 }
 
 /** 逐条款确认（BR-022/024）：判否原因必填（D5/D6）在入口层拦截；选「未确认」撤销确认 */
 async function onConfirmChange(row: ClauseRow, raw: unknown) {
-  if (!confirming.value) return;
+  const no = row.clause.no;
+  if (!confirming.value || savingConfirms.value[no]) return;
   const value = String(raw ?? '') as '' | ClauseConfirm['value'];
-  localValues.value[row.clause.no] = value;
+  localValues.value[no] = value;
   if (value === '') {
+    savingConfirms.value[no] = true;
     try {
-      await clearClauseConfirm(props.record.id, row.clause.no);
+      await clearClauseConfirm(props.record.id, no);
+      delete reasonDrafts.value[no];
     } catch {
       Message.error(t('surveys.messages.storageError'));
+    } finally {
+      delete localValues.value[no];
+      delete savingConfirms.value[no];
     }
     return;
   }
@@ -278,11 +286,14 @@ async function onConfirmChange(row: ClauseRow, raw: unknown) {
     Message.error(t('surveys.workspace.matching.reasonRequired'));
     return;
   }
+  savingConfirms.value[no] = true;
   try {
-    await setClauseConfirm(props.record.id, row.clause.no, value, reason);
-    localValues.value[row.clause.no] = '';
+    await setClauseConfirm(props.record.id, no, value, reason);
   } catch {
     Message.error(t('surveys.messages.storageError'));
+  } finally {
+    delete localValues.value[no];
+    delete savingConfirms.value[no];
   }
 }
 
@@ -519,7 +530,7 @@ const recalcCount = ref(0);
       </div>
     </section>
 
-    <!-- 含不确定题提示（步骤 2 补答前相关条款停留在待核验，BR-020） -->
+    <!-- 含待定题提示（步骤 2 补答前相关条款可能停留在待核验，BR-020） -->
     <p v-if="pendingQuestionCodes.length" class="sm-pending-tip">
       <IconExclamationCircle :size="14" aria-hidden="true" />
       <span>{{ t('surveys.workspace.matching.pendingTip', { codes: pendingQuestionCodes.join('、'), count: pendingQuestionCodes.length }) }}</span>
@@ -669,6 +680,7 @@ const recalcCount = ref(0);
                   :model-value="radioValue(row)"
                   :placeholder="t('surveys.workspace.matching.confirmUnconfirmed')"
                   allow-clear
+                  :disabled="savingConfirms[row.clause.no]"
                   @change="(value: unknown) => onConfirmChange(row, value)"
                 >
                   <a-option value="applicable">{{ t('surveys.workspace.matching.confirmApplicable') }}</a-option>
