@@ -21,6 +21,7 @@ const accountIdsByName: Record<string, string> = {
 
 const relations: readonly SurveyRelation[] = [
   { id: 'task-confirm-0302', surveyId: 'S-2026-0302', accountId: 'demo-wang', kind: 'pending', activeStatus: 'pending-confirm' },
+  { id: 'task-reconfirm-0320', surveyId: 'S-2026-0320', accountId: 'demo-wang', kind: 'pending', activeStatus: 'pending-confirm' },
   { id: 'task-consent-0305', surveyId: 'S-2026-0305', accountId: 'demo-wang', kind: 'pending', activeStatus: 'section-filling' },
   { id: 'task-basic-0305', surveyId: 'S-2026-0305', accountId: 'demo-wang', kind: 'pending', activeStatus: 'section-filling' },
   { id: 'task-section-0313', surveyId: 'S-2026-0313', accountId: 'demo-wang', kind: 'pending', activeStatus: 'section-filling' },

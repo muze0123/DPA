@@ -13,7 +13,7 @@
  * 真实后端后由接口替换，页面不改动）。
  */
 import type { ClauseConfirm, SurveyMatching, SurveyRecord, SurveyStatus } from './surveys';
-import { SURVEY_TOTAL_CLAUSES, surveyRecords } from './surveys';
+import { SURVEY_TOTAL_CLAUSES, approvedClauseReview, surveyRecords } from './surveys';
 import { localSurveyDraftIds, updateLocalSurveyDraft } from './drafts';
 import {
   DEFAULT_QUESTION_VERSION, isKnownCode, questionCodes, questionsForVersion,
@@ -461,6 +461,28 @@ export function buildSurveyMatching(record: SurveyRecord): SurveyMatching {
 
 /** 懒初始化：历史数据进入步骤3时补算初筛（已存在则原样返回） */
 export function ensureSurveyMatching(record: SurveyRecord): SurveyMatching {
+  // 退回样例的上一轮审核结论按条款目录生成；批准项继续锁定，驳回项留空供再次确认。
+  if (record.id === 'S-2026-0320' && !record.matching) {
+    const matching = buildSurveyMatching(record);
+    const rejectedNos = new Set(record.returnInfo?.clauseNos ?? []);
+    const at = record.returnInfo?.time ?? record.updatedAt;
+    const by = record.returnInfo?.operator ?? '赵敏';
+    const reviews = Object.fromEntries(CLAUSES.map((clause) => [clause.no, {
+      result: rejectedNos.has(clause.no) ? 'rejected' as const : 'approved' as const,
+      by, note: rejectedNos.has(clause.no) ? record.returnInfo?.reason ?? '' : '', at,
+    }]));
+    matching.manual = Object.fromEntries(CLAUSES.filter((clause) => !rejectedNos.has(clause.no))
+      .map((clause) => [clause.no, matching.autoResults[clause.no] === 'not-hit'
+        ? { value: 'not-applicable' as const, reason: '自动初筛不命中，经审核确认。' }
+        : { value: 'applicable' as const, reason: '' }]));
+    matching.reviews = Object.fromEntries(Object.entries(reviews).filter(([, review]) => review.result === 'approved'));
+    matching.reviewRounds = [{
+      returnedAt: at, returnedBy: by, reason: record.returnInfo?.reason ?? '',
+      rejectedClauses: [...rejectedNos], reviews,
+    }];
+    recomputeMatchedCount(record);
+    return matching;
+  }
   return record.matching ?? buildSurveyMatching(record);
 }
 
@@ -671,6 +693,13 @@ export function engagedItemIndex(record: SurveyRecord): Map<string, string> | nu
   return index;
 }
 
+/** 退回后仅被驳回条款可重新确认；已通过条款跨轮次锁定。 */
+export function canConfirmClause(record: SurveyRecord, no: string): boolean {
+  if (record.status !== 'pending-confirm' || approvedClauseReview(record.matching, no)) return false;
+  const returnedNos = record.returnInfo?.clauseNos;
+  return !returnedNos?.length || returnedNos.includes(no);
+}
+
 /**
  * 逐条款确认（BR-022/024）：写入人工值与原因并联动参与条目数；
  * 本地草稿同步回浏览器库，失败回滚。入口层负责只放开可编辑阶段。
@@ -683,7 +712,7 @@ export async function setClauseConfirm(
 ): Promise<void> {
   const record = surveyRecords.find((item) => item.id === recordId);
   if (!record || !record.matching) throw new Error('Matching snapshot missing');
-  if (record.status !== 'pending-confirm') throw new Error('Clause confirmation is read-only at this stage');
+  if (!canConfirmClause(record, no)) throw new Error('Clause confirmation is locked');
   const previous = record.matching.manual[no];
   const previousUpdatedAt = record.updatedAt;
   record.matching.manual[no] = { value, reason: reason.trim() };
@@ -718,7 +747,7 @@ export async function adoptAutoResults(
   const previousUpdatedAt = record.updatedAt;
   let adopted = 0;
   for (const clause of CLAUSES) {
-    if (record.matching.manual[clause.no]) continue;
+    if (!canConfirmClause(record, clause.no) || record.matching.manual[clause.no]) continue;
     const auto = record.matching.autoResults[clause.no];
     if (auto === 'undetermined') continue;
     record.matching.manual[clause.no] = auto === 'applicable'
@@ -746,7 +775,7 @@ export async function adoptAutoResults(
 export async function clearClauseConfirm(recordId: string, no: string): Promise<void> {
   const record = surveyRecords.find((item) => item.id === recordId);
   if (!record || !record.matching) throw new Error('Matching snapshot missing');
-  if (record.status !== 'pending-confirm') throw new Error('Clause confirmation is read-only at this stage');
+  if (!canConfirmClause(record, no)) throw new Error('Clause confirmation is locked');
   if (!record.matching.manual[no]) return;
   const previous = record.matching.manual[no];
   const previousUpdatedAt = record.updatedAt;
@@ -764,10 +793,10 @@ export async function clearClauseConfirm(recordId: string, no: string): Promise<
 }
 
 /**
- * 提交并发起匹配复核（N3，BR-021 门禁）：38 条款全部人工确认 + 判否原因非空。
+ * 提交并发起匹配复核（N3，BR-021 门禁）：首次需确认全部条款；退回后仅重验被驳回条款。
  * 通过后 待确认 → 匹配审核中；独立审核人 mock 指定为另一名合规专员（接入天枢
- * 审批实例后由回调写入真实审核人）。提交即开启新一轮条款匹配复核：上一轮的
- * 审核记录（含拒绝留痕）整轮清空，由审批人重新逐条/批量审核。
+ * 审批实例后由回调写入真实审核人）。重新提交保留已通过条款的锁定结论，
+ * 审批人仅复核本轮未通过条款；历史轮次保留在 reviewRounds。
  */
 export async function submitMatchingForReview(recordId: string): Promise<
   { ok: true } | { ok: false; unconfirmed: string[]; missingReason: string[] }
@@ -775,19 +804,28 @@ export async function submitMatchingForReview(recordId: string): Promise<
   const record = surveyRecords.find((item) => item.id === recordId);
   if (!record || !record.matching) throw new Error('Matching snapshot missing');
   if (record.status !== 'pending-confirm') throw new Error('Only pending-confirm surveys can be submitted');
-  const unconfirmed = CLAUSES.filter((clause) => !record.matching?.manual[clause.no]).map((clause) => clause.no);
-  const missingReason = CLAUSES
+  const requiredClauses = record.returnInfo?.clauseNos?.length
+    ? CLAUSES.filter((clause) => record.returnInfo?.clauseNos?.includes(clause.no))
+    : CLAUSES;
+  const unconfirmed = requiredClauses.filter((clause) => !record.matching?.manual[clause.no]).map((clause) => clause.no);
+  const missingReason = requiredClauses
     .filter((clause) => record.matching?.manual[clause.no]?.value === 'not-applicable'
       && !record.matching.manual[clause.no]?.reason.trim())
     .map((clause) => clause.no);
   if (unconfirmed.length || missingReason.length) return { ok: false, unconfirmed, missingReason };
-  const previousReviews = record.matching.reviews ? { ...record.matching.reviews } : {};
+  const previousReviews = record.matching.reviews ? { ...record.matching.reviews } : undefined;
   const previousReturnInfo = record.returnInfo;
   const previousStatus = record.status;
   const previousUpdatedAt = record.updatedAt;
+  const previousReviewer = record.reviewer;
+  const previousUpdatedBy = record.updatedBy;
   record.status = 'matching-reviewing';
   record.reviewer = '赵敏';
-  record.matching.reviews = {};
+  // 演示任务由功能负责人完成本步确认；真实操作人待天枢身份/审批实例回传。
+  record.updatedBy = record.owner;
+  record.matching.reviews = Object.fromEntries(
+    Object.entries(previousReviews ?? {}).filter(([, review]) => review.result === 'approved'),
+  );
   delete record.returnInfo;
   record.updatedAt = nowText();
   try {
@@ -795,7 +833,10 @@ export async function submitMatchingForReview(recordId: string): Promise<
   } catch (error) {
     record.status = previousStatus;
     record.updatedAt = previousUpdatedAt;
-    record.matching.reviews = previousReviews;
+    record.reviewer = previousReviewer;
+    record.updatedBy = previousUpdatedBy;
+    if (previousReviews) record.matching.reviews = previousReviews;
+    else delete record.matching.reviews;
     if (previousReturnInfo) record.returnInfo = previousReturnInfo;
     throw error;
   }

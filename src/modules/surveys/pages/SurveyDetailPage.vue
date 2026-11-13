@@ -51,16 +51,21 @@ const { statusLabel } = useSurveyLabels();
 
 const loading = ref(true);
 const record = ref<SurveyRecord | null>(null);
+/** 退回待确认时当前审核任务已结束，概要仍展示上轮审核人供负责人核对。 */
+const summaryReviewer = computed(() => record.value?.reviewer
+  ?? (record.value?.status === 'pending-confirm' ? record.value.returnInfo?.operator : undefined));
 const functions = ref<FunctionRecord[]>([]);
 
 async function load() {
+  const requestedId = String(route.params.id ?? '');
   loading.value = true;
   try {
     // 本地草稿先合并（与列表页同一口径），否则刚保存的草稿在详情页不可见
     mergeLocalSurveyDrafts(await loadLocalSurveyDrafts());
     functions.value = (await loadLedger()).records;
-    const id = String(route.params.id ?? '');
-    record.value = surveyRecords.find((item) => item.id === id) ?? null;
+    // Ignore a completed read after navigating away; never redirect a different route.
+    if (!['survey-detail', 'survey-detail-steps'].includes(String(route.name)) || String(route.params.id ?? '') !== requestedId) return;
+    record.value = surveyRecords.find((item) => item.id === requestedId) ?? null;
     if (!record.value) {
       Message.warning(t('surveys.create.surveyMissing'));
       void router.replace({ name: 'surveys' });
@@ -97,6 +102,7 @@ const activeStepKey = computed(() => SURVEY_STEPS.find((step) => step.no === act
 
 /** 深链/刷新归一：无 step、非法 step 或该阶段不可进入 → replace 到当前行动步 */
 function normalizeStep() {
+  if (!['survey-detail', 'survey-detail-steps'].includes(String(route.name))) return;
   const current = record.value;
   if (!current) return;
   const target = resolveStepParam(current.status, route.params.step);
@@ -243,7 +249,7 @@ onUnmounted(() => {
 
 <template>
   <main class="survey-detail">
-    <!-- 面包屑条：左「问卷工作台 / 问卷编号」，右为当前步骤的全局动作区（步骤 2 Teleport 注入）；
+    <!-- 面包屑条：左「任务管理 / 问卷编号」，右为当前步骤的全局动作区（步骤 2 Teleport 注入）；
          页面滚动吸附后按 DESIGN.md Level 4 出底部投影 -->
     <div class="detail-topbar" :class="{ stuck: topbarStuck }">
       <nav class="detail-crumbs" :aria-label="t('surveys.title')">
@@ -262,23 +268,16 @@ onUnmounted(() => {
         <div class="detail-card-head">
           <h2 class="detail-card-title">{{ t('surveys.workspace.summaryTitle') }}</h2>
           <a-tag :color="surveyStatusColor(record.status)" size="small">{{ statusLabel(record.status) }}</a-tag>
-          <!-- 已退回：阶段内子状态（v1.3 §0.5），人工态优先于派生状态 -->
-          <a-tag v-if="record.returnInfo" size="small" color="red" data-testid="detail-returned-tag">{{ t('surveys.labels.returned') }}</a-tag>
           <a-tag v-if="record.offLedger" size="small" color="orange">{{ t('surveys.labels.offLedger') }}</a-tag>
         </div>
 
-        <!-- 退回标记：阶段上的子状态，整卷可继续，但原因必须可见 -->
+        <!-- 退回说明：保留阶段内退回原因与时间，供重新确认时核对 -->
         <a-alert v-if="record.returnInfo" type="error" class="detail-banner">
           {{ t('surveys.workspace.returnBanner') }}
           {{ t('surveys.labels.returnReason') }}{{ record.returnInfo.reason }}
           {{ t('surveys.labels.returnBy') }}{{ record.returnInfo.operator }}
           {{ t('surveys.labels.returnTime') }}{{ record.returnInfo.time }}
         </a-alert>
-        <!-- 匹配审核中：行动步已落第 3 步（逐条审核条款匹配结果），横幅提示审核语境 -->
-        <a-alert v-if="record.status === 'matching-reviewing'" type="info" class="detail-banner">
-          {{ t('surveys.workspace.reviewBanner') }}
-        </a-alert>
-
         <!-- 概要字段：全部直接展示，不折叠；字段名灰（text-3）、字段值黑 400 不加粗；
              上下间距 10px、左右 24px（2026-10-27 裁决：去掉查看更多） -->
         <dl class="detail-facts" data-testid="detail-facts">
@@ -315,7 +314,7 @@ onUnmounted(() => {
           <div class="detail-fact">
             <dt>{{ t('surveys.fields.reviewer') }}{{ t('surveys.workspace.fieldSeparator') }}</dt>
             <dd>
-              <span v-if="record.reviewer">{{ record.reviewer }}</span>
+              <span v-if="summaryReviewer">{{ summaryReviewer }}</span>
               <a-tooltip v-else :content="t('surveys.labels.noReviewer')"><span class="detail-empty">—</span></a-tooltip>
             </dd>
           </div>

@@ -191,7 +191,7 @@ function confirmEdit() { editing.value = true; editModalOpen.value = false; }
 
 /**
  * 取消：退出当前作答动作，不产生任何数据变更（三态作答本就即存，无需丢弃确认）。
- * 待确认阶段的编辑态 → 退出编辑回到只读；其余可作答阶段 → 返回问卷工作台列表。
+ * 待确认阶段的编辑态 → 退出编辑回到只读；其余可作答阶段 → 返回任务管理列表。
  */
 function cancel() {
   if (props.record.status === 'pending-confirm' && editing.value) {

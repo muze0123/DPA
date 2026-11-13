@@ -142,7 +142,7 @@ function ensureMockLedger(db: IDBDatabase): Promise<void> {
           }
         }
         // 演示快照清理（2026-10-29）：survey-snapshot-N 只用于早期的状态派生演示，
-        // 现状状态与关联问卷计数均以问卷工作台真实问卷为准；这些行没有 status，
+        // 现状状态与关联问卷计数均以任务管理真实问卷为准；这些行没有 status，
         // 却会让删除守卫/存储层「已关联问卷」校验误判，一次性删除
         const allSurveys = await request(surveys.getAll() as IDBRequest<SurveySnapshot[]>);
         for (const snapshot of allSurveys) {

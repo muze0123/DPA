@@ -23,7 +23,7 @@ import {
   type ClauseGroupKey,
 } from './matching';
 import { ITEM_CATALOG, SEGMENT_ITEM_TOTAL, itemById, itemsOfClause } from './items';
-import type { SurveyRecord, SurveyReturnInfo } from './surveys';
+import { approvedClauseReview, type SurveyRecord, type SurveyReturnInfo } from './surveys';
 import { localSurveyDraftIds, updateLocalSurveyDraft } from './drafts';
 
 /** 系统行为（条目生成/适用性翻转）的审核人标记，属业务数据不翻译 */
@@ -58,7 +58,7 @@ const stores = reactive<Record<string, Record<string, ItemAudit>>>({});
 function nowText(): string {
   const date = new Date();
   const pad = (value: number) => String(value).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 /** 已提交复核的阶段：参与条目在生成时直接落「待审核」（对应 IT3 已由功能负责人确认） */
@@ -237,20 +237,27 @@ export function promoteItemsToReview(record: SurveyRecord): number {
  * 待审核条目回待确认，已锁定条目保留（退回只重开受影响内容）。
  * I4（待确认不可退回）与 I5（已锁定只能通过释放回退）在此拒绝。
  */
-export function returnSurvey(record: SurveyRecord, reason: string, operator: string): SurveyReturnInfo {
+export function returnSurvey(record: SurveyRecord, reason: string, operator: string, clauseNos: readonly string[] = []): SurveyReturnInfo {
   if (!reason.trim()) throw new Error('I3: return reason required');
-  if (record.status !== 'matching-reviewing' && record.status !== 'section-reviewing') {
+  if (record.status !== 'matching-reviewing') {
     throw new Error('I4/I5: survey is not in a returnable stage');
   }
   const store = ensureItemReview(record);
   const at = nowText();
-  for (const audit of Object.values(store)) {
+  const affected = new Set(clauseNos);
+  for (const item of ITEM_CATALOG) {
+    if (affected.size && !affected.has(item.no)) continue;
+    const audit = store[item.id];
+    if (!audit) continue;
     if (audit.state !== 'pending-review') continue;
     audit.state = 'pending-confirm';
     delete audit.reviewer;
     delete audit.reviewedAt;
   }
-  const info: SurveyReturnInfo = { reason: reason.trim(), operator, time: at };
+  const info: SurveyReturnInfo = {
+    reason: reason.trim(), operator, time: at,
+    ...(clauseNos.length ? { clauseNos: [...clauseNos] } : {}),
+  };
   record.returnInfo = info;
   record.status = 'pending-confirm';
   record.updatedAt = at;
@@ -325,13 +332,19 @@ export async function returnSectionReview(record: SurveyRecord, reason: string, 
   const previousStatus = record.status;
   const previousReturnInfo = record.returnInfo;
   const previousUpdatedAt = record.updatedAt;
+  const previousReviewer = record.reviewer;
+  const previousUpdatedBy = record.updatedBy;
   const at = nowText();
   record.returnInfo = { reason: reason.trim(), operator, time: at };
   record.status = 'section-filling';
+  delete record.reviewer;
+  record.updatedBy = operator;
   record.updatedAt = at;
   await persist(record, () => {
     record.status = previousStatus;
     record.returnInfo = previousReturnInfo;
+    record.reviewer = previousReviewer;
+    record.updatedBy = previousUpdatedBy;
     record.updatedAt = previousUpdatedAt;
   });
 }
@@ -375,7 +388,7 @@ export function clauseLocks(record: SurveyRecord): ClauseLockRow[] {
 
 /**
  * 问卷派生状态（02 §3.4 优先级，仅匹配快照轴）：
- * 1 已退回（人工态，不自动改写）→ 3 全部参与条目已锁定 ⇒ 分区填写中 →
+ * 1 已退回（人工态，不自动改写）→ 3 当前轮匹配审批与全部参与条目均通过 ⇒ 分区填写中 →
  * 4 存在待审核 ⇒ 待审核（保守取值）。
  * 仅在 matching-reviewing / section-filling 之间流转，不改写退回与更后阶段。
  */
@@ -389,8 +402,12 @@ export function aggregateSurvey(record: SurveyRecord, actor?: string): void {
     return;
   }
   if (record.status === 'matching-reviewing') {
+    // 条目锁定不能越过本轮条款匹配审批；尤其避免退回后沿用旧轮结论直接进入分区填写。
+    if (record.matching?.reviews
+      && !CLAUSES.every((clause) => approvedClauseReview(record.matching, clause.no))) return;
     record.status = 'section-filling';
-    if (actor) record.reviewer = actor;
+    if (actor) record.updatedBy = actor;
+    delete record.reviewer;
     record.updatedAt = nowText();
   }
 }

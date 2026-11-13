@@ -8,7 +8,7 @@
  * - 编辑已发布模板保存后内部自动升小版本，历史问卷绑定创建时冻结的题目快照；
  *   版本号不在本模块界面展示（2026-11-04 用户裁决：去掉版本号字段，仅保留内部字段供问卷快照冻结）。
  * - 删除为硬删除：存在进行中（未归档）问卷引用时禁止删除，历史快照保留。
- * - 使用次数点击 → 问卷工作台按该模板筛选。
+ * - 使用次数点击 → 任务管理按该模板筛选。
  * - 新建/复制抽屉（2026-10-29 用户裁决）：底栏为 取消 / 保存草稿 / 提交问题库；
  *   提交即创建并立即发布（状态置「已发布」，保存前仅做名称/题干基础校验）；编辑抽屉维持 取消 / 保存。
  * - 表单不再展示判定规则字段与实时覆盖度统计（2026-10-29 用户裁决）：
@@ -545,8 +545,8 @@ async function submitTemplate() {
 /* ------------------------------------------------------------------ 行内动作 */
 
 function openUsage(template: SurveyTemplate) {
-  // 2026-11-03 用户裁决：工作台筛选设置下线「问卷模板」条件——「使用次数」跳转不再携带模板筛选，
-  // 落到工作台全量列表（任务名称含模板名的记录仍可经「任务搜索」找到）
+  // 2026-11-03 用户裁决：任务管理筛选设置下线「问卷模板」条件——「使用次数」跳转不再携带模板筛选，
+  // 落到任务管理全量列表（任务名称含模板名的记录仍可经「任务搜索」找到）
   void router.push({ name: 'surveys' });
   void template.id;
 }
@@ -748,8 +748,6 @@ onMounted(async () => {
           </ColumnSettingsPopover>
         </div>
       </div>
-
-      <hr class="templates-divider" />
 
       <a-table
         :columns="tableColumns"
@@ -1109,10 +1107,9 @@ onMounted(async () => {
 .templates-heading-hint .arco-icon { flex: none; color: var(--app-color-warning); font-size: 14px; }
 
 .templates-heading-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
-.templates-divider { height: 0; margin: 0 0 12px; border: 0; border-top: 1px solid var(--app-divider); }
 .column-settings-trigger { width: 32px; height: 32px; padding: 0; }
 
-/* 数据列表：白底、无外框、无斑马纹、行间单线分隔（与问卷工作台同一套表格处理） */
+/* 数据列表：白底、无外框、无斑马纹、行间单线分隔（与任务管理同一套表格处理） */
 .templates-panel :deep(.arco-table) { border: 0; }
 .templates-panel :deep(.arco-table-container) { border: 0; }
 .templates-panel :deep(.arco-table-th) { height: 44px; padding: 0 12px; border-bottom: 1px solid var(--app-divider); color: var(--color-text-1); background: var(--app-table-header); font-size: 14px; font-weight: 600; line-height: 22px; white-space: nowrap; }

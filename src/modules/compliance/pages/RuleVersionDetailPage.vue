@@ -598,8 +598,9 @@ watch(() => route.query.clause, (code) => {
 .chapter-select :deep(.arco-select-view-tag), .section-select :deep(.arco-select-view-tag) { flex: 0 1 auto; min-width: 0; }
 .chapter-select :deep(.arco-select-view-tag:not(:has(.arco-tag-close-btn))), .section-select :deep(.arco-select-view-tag:not(:has(.arco-tag-close-btn))) { flex: 0 0 auto; }
 
-/* 列表头：标题 16/600/24 + 条数贴标题右侧（baseline 对齐），底部一条分隔线 */
-.rule-list-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--app-divider); }
+/* 列表头：标题 16/600/24 + 条数贴标题右侧（baseline 对齐）；标题栏下不留分割线，
+   标题到内容的间距统一为 12px（2026-11-12 用户要求，与业务列表页同一口径） */
+.rule-list-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 12px; }
 .rule-list-title { margin: 0; font-size: 16px; font-weight: 600; line-height: 24px; }
 .rule-list-count { color: var(--color-text-3); font-size: 14px; line-height: 22px; font-variant-numeric: tabular-nums; }
 

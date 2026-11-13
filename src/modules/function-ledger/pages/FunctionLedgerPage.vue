@@ -159,8 +159,8 @@ const ownerOptions = computed(() => [...new Set(records.value.flatMap((record) =
 const departmentOptions = computed(() => [...new Set(records.value.flatMap((record) => responsibleDepartments(record).map(({ department }) => department)))].sort());
 /**
  * 台账侧问卷口径统一（2026-10-27）：状态派生、关联问卷计数、状态气泡说明共用
- * 「问卷工作台可见的真实问卷」（工作台种子 + 本地草稿，按 functionId / fuliId 绑定功能）。
- * 台账库 surveys 店里另有仅用于演示状态派生的快照（无 status/functionName，工作台
+ * 「任务管理可见的真实问卷」（任务管理种子 + 本地草稿，按 functionId / fuliId 绑定功能）。
+ * 台账库 surveys 店里另有仅用于演示状态派生的快照（无 status/functionName，任务管理
  * 不展示），不再计入——否则计数与点击「关联问卷」跳转后的检索结果对不上。
  */
 const functionIdByFuliId = computed(() => new Map(records.value.map((record) => [record.fuliId, record.id] as const)));
@@ -249,7 +249,7 @@ function localCreator(value: string) {
 function relatedSurveyCount(record: FunctionRecord): number {
   return workbenchSnapshots.value.filter((survey) => survey.functionId === record.id).length;
 }
-/** hover 高亮 + 点击携带功能名称跳转问卷工作台检索 */
+/** hover 高亮 + 点击携带功能名称跳转任务管理检索 */
 function openRelatedSurveys(record: FunctionRecord) {
   void router.push({ path: '/surveys', query: { keyword: record.fuliId } });
 }
@@ -311,7 +311,7 @@ async function reload() {
   try {
     const result = await loadLedger();
     records.value = result.records;
-    // 关联问卷计数与状态派生统一走 workbenchSnapshots（问卷工作台种子 + 本地草稿，
+    // 关联问卷计数与状态派生统一走 workbenchSnapshots（任务管理种子 + 本地草稿，
     // 2026-10-27 口径）；台账库 surveys 店里的演示快照已在 ensureMockLedger 一次性清理。
     try { mergeLocalSurveyDrafts(await loadLocalSurveyDrafts()); } catch { /* 库不可用时退化为种子口径 */ }
     if (page.value > Math.ceil(filtered.value.length / pageSize.value)) page.value = Math.max(1, Math.ceil(filtered.value.length / pageSize.value));
@@ -448,7 +448,7 @@ async function submitForm() {
 }
 
 /**
- * 删除守卫（2026-10-29 修复）：只按 workbenchSnapshots（问卷工作台可见的真实问卷）
+ * 删除守卫（2026-10-29 修复）：只按 workbenchSnapshots（任务管理可见的真实问卷）
  * 判断是否已关联问卷；此前把台账库 surveys 店的演示快照也算进来，导致未关联问卷
  * 的功能无法删除。
  */
@@ -618,7 +618,7 @@ async function confirmExport() {
 
 <template>
   <div class="ledger-page">
-    <!-- 筛选卡（2026-11-05 裁决，与工作台一致）：状态页签在上，分割线隔开，筛选条件在下 -->
+    <!-- 筛选卡（2026-11-05 裁决，与任务管理一致）：状态页签在上，分割线隔开，筛选条件在下 -->
     <div class="ledger-filter-panel">
       <div class="ledger-status-tabs" role="tablist" :aria-label="t('ledger.filters.status')">
         <button v-for="tab in statusTabs" :key="tab.key || 'all'" type="button" role="tab" class="ledger-status-tab" :class="{ active: activeStatus === tab.key }" :aria-selected="activeStatus === tab.key" :tabindex="activeStatus === tab.key ? 0 : -1" @click="selectStatusTab(tab.key)">
@@ -698,7 +698,7 @@ async function confirmExport() {
         <!-- 主数据状态 →「是否启用」开关（2026-10-29 用户裁决）：直接切换，默认创建即启用 -->
         <template #masterStatus="{ record }"><a-switch :model-value="isFunctionEnabled(record)" :loading="togglingIds.has(record.id)" :disabled="togglingIds.has(record.id)" :aria-label="t(`ledger.masterStatuses.${isFunctionEnabled(record) ? 'active' : 'disabled'}`)" @change="toggleEnabled(record, $event)" /></template>
         <template #relatedSurveys="{ record }">
-          <!-- 2026-10-29 用户裁决：无关联问卷显示 0，同样可点击跳转工作台检索 -->
+          <!-- 2026-10-29 用户裁决：无关联问卷显示 0，同样可点击跳转任务管理检索 -->
           <button type="button" class="ledger-survey-link" @click="openRelatedSurveys(record)">{{ relatedSurveyCount(record) }}</button>
         </template>
         <template #creator="{ record }">{{ localCreator(record.creator) }}</template>
@@ -907,7 +907,7 @@ async function confirmExport() {
 .ledger-filter-actions { display: flex; align-items: center; gap: 8px; }
 .ledger-icon-button { display: inline-grid; width: 32px; height: 32px; padding: 0; place-items: center; }
 
-/* 状态页签（2026-11-05 由列表工具条移入筛选面板顶部，与工作台同形态）：
+/* 状态页签（2026-11-05 由列表工具条移入筛选面板顶部，与任务管理同形态）：
    下划线式文字页签（二轮裁决）——无边框无底色，选中项主色文字 + 底部 2px 主色下划线 */
 .ledger-status-tabs { display: flex; flex-wrap: wrap; gap: 24px; }
 .ledger-status-tab { position: relative; height: 32px; margin-left: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--color-text-2); font: inherit; line-height: 30px; white-space: nowrap; cursor: pointer; }
@@ -935,7 +935,7 @@ async function confirmExport() {
 .ledger-responsible-list li span:last-child { color: var(--color-text-2); font-size: 12px; }
 .ledger-name-link { border: 0; padding: 0; background: transparent; color: var(--color-text-1); cursor: pointer; font: inherit; }
 .ledger-name-link:hover, .ledger-name-link:focus-visible { color: var(--app-accent); }
-/* 关联问卷数值：hover 高亮，点击跳转问卷工作台 */
+/* 关联问卷数值：hover 高亮，点击跳转任务管理 */
 .ledger-survey-link { min-width: 24px; border: 0; padding: 2px 8px; border-radius: 2px; background: transparent; color: var(--color-text-1); cursor: pointer; font: inherit; font-variant-numeric: tabular-nums; }
 .ledger-survey-link:hover, .ledger-survey-link:focus-visible { color: var(--app-accent); background: var(--color-primary-light-1); }
 

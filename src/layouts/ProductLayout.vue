@@ -151,7 +151,7 @@ function toggleSidebar() {
 <template>
   <div class="product-shell">
     <header class="product-header">
-      <router-link class="product-brand" to="/functions" aria-label="功能数据安全合规自评">
+      <router-link class="product-brand" to="/workbench" aria-label="功能数据安全合规自评">
         <span class="product-mark" aria-hidden="true"><IconApps :size="21" /></span>
         <strong>功能数据安全合规自评</strong>
       </router-link>

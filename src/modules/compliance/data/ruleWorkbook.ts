@@ -27,7 +27,7 @@ const EXPORT_EXTRA = ['规则状态', '规则说明', '题目数', '创建人', 
 const ERROR_HEADER = '错误原因';
 const MAX_BYTES = 20 * 1024 * 1024;
 
-/** 工作簿为中文表头，分区名称 ↔ 分区键（与工作台填写分区命名一致） */
+/** 工作簿为中文表头，分区名称 ↔ 分区键（与任务管理填写分区命名一致） */
 const SECTION_LABELS: Record<SectionKey, string> = {
   basicInfo: '基础信息', consent: '告知与同意', transmission: '数据传输',
   sensors: '传感器', biometric: '生物特征与口令', anonymization: '匿名化', materials: '通用材料',

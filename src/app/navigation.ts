@@ -1,6 +1,6 @@
 import type { Component } from 'vue';
 import {
-  IconApps, IconBranch, IconCopy, IconFile, IconHistory, IconLink, IconOrderedList, IconStorage,
+  IconDashboard, IconApps, IconBranch, IconCopy, IconFile, IconHistory, IconLink, IconOrderedList, IconStorage,
 } from '@arco-design/web-vue/es/icon';
 
 export interface NavigationChild {
@@ -18,9 +18,9 @@ export interface NavigationItem {
 }
 
 /** 本系统左侧菜单；用户与授权入口由天枢统一用户中心提供。
- *  命名口径（2026-11-01 用户裁决，第二轮）：一级菜单用业务对象自己的名词（功能台账 / 问卷问题 /
- *  数据材料 / 分区表单 / 规则配置），不再统一加「管理」后缀——菜单名与页面文案同名，减少一次翻译。 */
+ *  命名口径：任务执行入口称「任务管理」；配置类菜单仍沿用 2026-11-01 的业务对象名称。 */
 export const navigationItems: NavigationItem[] = [
+  { name: 'workbench', path: '/workbench', labelKey: 'workbench.title', icon: IconDashboard },
   // 功能台账（2026-11-01 第二轮：由「功能管理」改回原名）：功能 / 子功能 / 主 ECU 主数据，问卷身份来源
   { name: 'function-ledger', path: '/functions', labelKey: 'nav.ledger', icon: IconApps },
   { name: 'surveys', path: '/surveys', labelKey: 'nav.surveys', icon: IconFile },
@@ -63,10 +63,10 @@ export const navigationItems: NavigationItem[] = [
 // 判定输入 → 填写端点 → 数据口径与佐证 → 装配规则 → 留痕治理」排列；数据材料（数据类型 / 数据字典 /
 // 材料清单）由「先定口径再答题」改为「填完再补口径与佐证」，与执行链路一致：问卷和分区表单是日常动作，
 // 数据材料是按需核对的支撑资料。配置段内部仍「先原料、后配方」，规则配置收口在配置段末尾。
-// 工作台（默认落地页）、审计（只读、跨模块、事后）两端位置固定。
-// 工作台 → 功能台账 → 问卷问题 → 分区表单（表单配置/填写记录）→ 数据材料（数据类型/数据字典/材料清单）→ 测试方法 → 规则配置 → 审计管理
+// 任务管理（默认落地页）、审计（只读、跨模块、事后）两端位置固定。
+// 任务管理 → 功能台账 → 问卷问题 → 分区表单（表单配置/填写记录）→ 数据材料（数据类型/数据字典/材料清单）→ 测试方法 → 规则配置 → 审计管理
 // 一句话读法：谁（功能）→ 问什么 → 填什么 → 用什么数据佐证 → 怎么判 → 谁改过。
-const sidebarOrder = ['surveys', 'function-ledger', 'templates', 'sections', 'data-materials', 'rule-test-methods', 'rule-versions', 'audit'];
+const sidebarOrder = ['workbench', 'surveys', 'function-ledger', 'templates', 'sections', 'data-materials', 'rule-test-methods', 'rule-versions', 'audit'];
 const sidebarRank = new Map(sidebarOrder.map((name, index) => [name, index]));
 export const sidebarNavigationItems = [...navigationItems].sort((left, right) =>
   (sidebarRank.get(left.name) ?? sidebarOrder.length) - (sidebarRank.get(right.name) ?? sidebarOrder.length));

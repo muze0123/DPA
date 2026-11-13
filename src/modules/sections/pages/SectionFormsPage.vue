@@ -603,8 +603,6 @@ onBeforeUnmount(() => window.removeEventListener('resize', onResize));
         </div>
       </div>
 
-      <hr class="section-forms-divider" />
-
       <a-table
         :columns="tableColumns"
         :data="pagedRows"
@@ -691,8 +689,6 @@ onBeforeUnmount(() => window.removeEventListener('resize', onResize));
           </a-button>
         </div>
       </div>
-
-      <hr class="section-forms-divider" />
 
       <a-table
         :columns="recordColumns"
@@ -932,7 +928,6 @@ onBeforeUnmount(() => window.removeEventListener('resize', onResize));
 .section-forms-export-icon { flex: none; margin-top: 2px; color: var(--app-color-warning); font-size: 24px; }
 .section-forms-export-text p { margin: 0 0 4px; line-height: 22px; }
 .section-forms-export-text p:last-child { margin-bottom: 0; }
-.section-forms-divider { height: 0; margin: 0 0 12px; border: 0; border-top: 1px solid var(--app-divider); }
 .column-settings-trigger { width: 32px; height: 32px; padding: 0; }
 
 .section-forms-panel :deep(.arco-table) { border: 0; }

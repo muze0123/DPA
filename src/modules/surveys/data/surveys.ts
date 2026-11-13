@@ -1,5 +1,5 @@
 /**
- * 问卷工作台（CSA 合规自评）模块数据层。
+ * 任务管理（CSA 合规自评）模块数据层。
  *
  * 评估问卷改为由天枢-任务中心创建任务并下发到本平台（2026-10-30 用户裁决）：
  * 一条记录 = 一个下发任务；「待处理」为下发后的初始状态，执行时在任务详情的
@@ -13,6 +13,7 @@
 import { reactive } from 'vue';
 import type { FunctionInput } from '../../function-ledger/data/ledger';
 import { MOCK_FUNCTION_RECORDS } from '../../function-ledger/data/mockLedger';
+import { STANDARD_NODES } from '../../compliance/data/standard';
 import { deleteLocalSurveyDraft, localSurveyDraftIds as localDraftIds, updateLocalSurveyDraft } from './drafts';
 import { QUESTION_BANK, questionCodes, type SurveyAnswer } from './questions';
 
@@ -115,8 +116,10 @@ export interface SurveyReturnInfo {
   reason: string;
   /** 退回操作人 */
   operator: string;
-  /** 退回时间，YYYY-MM-DD HH:mm */
+  /** 退回时间，YYYY-MM-DD HH:mm:ss */
   time: string;
+  /** 匹配审批驳回时需重新确认的条款号；整卷或分区退回可为空 */
+  clauseNos?: string[];
 }
 
 /** 单条款人工确认（BR-018 manual 列；判否原因必填见 BR-021） */
@@ -138,8 +141,17 @@ export interface ClauseMatchReview {
   by: string;
   /** 审核备注；拒绝时即退回意见（必填） */
   note: string;
-  /** 审核时间，YYYY-MM-DD HH:mm */
+  /** 审核时间，YYYY-MM-DD HH:mm:ss */
   at: string;
+}
+
+/** 已关闭的匹配审批轮次：退回后保留逐条结论；通过的条款继续锁定。 */
+export interface ClauseMatchReviewRound {
+  returnedAt: string;
+  returnedBy: string;
+  reason: string;
+  rejectedClauses: string[];
+  reviews: Record<string, ClauseMatchReview>;
 }
 
 /**
@@ -157,8 +169,32 @@ export interface SurveyMatching {
   autoResults: Record<string, 'applicable' | 'not-hit' | 'undetermined'>;
   /** 人工确认：条款号 → 确认值与原因 */
   manual: Record<string, ClauseConfirm>;
-  /** 条款匹配审核：条款号 → 审核记录；重新提交审核时整轮清空（新一轮复核） */
+  /** 当前有效的匹配审批结论；已通过条款跨退回轮次保留 */
   reviews?: Record<string, ClauseMatchReview>;
+  /** 已退回的匹配审批历史，用于展示驳回留痕并兼容旧本地记录 */
+  reviewRounds?: ClauseMatchReviewRound[];
+}
+
+/** 通过条款跨轮次锁定；历史轮次回退兼容此前清空 reviews 的本地记录。 */
+export function approvedClauseReview(matching: SurveyMatching | undefined, no: string): ClauseMatchReview | undefined {
+  const current = matching?.reviews?.[no];
+  if (current?.result === 'approved') return current;
+  const rounds = matching?.reviewRounds ?? [];
+  for (let index = rounds.length - 1; index >= 0; index -= 1) {
+    const review = rounds[index].reviews[no];
+    if (review?.result === 'approved') return review;
+  }
+  return undefined;
+}
+
+/** 最近一次驳回留痕，供重新确认时展示审核人与时间。 */
+export function lastRejectedClauseReview(matching: SurveyMatching | undefined, no: string): ClauseMatchReview | undefined {
+  const rounds = matching?.reviewRounds ?? [];
+  for (let index = rounds.length - 1; index >= 0; index -= 1) {
+    const review = rounds[index].reviews[no];
+    if (review?.result === 'rejected') return review;
+  }
+  return undefined;
 }
 
 export interface SurveyRecord {
@@ -298,13 +334,26 @@ const seedSurveys: SurveyRecord[] = [
     matchedCount: 44, totalCount: SURVEY_TOTAL_CLAUSES, offLedger: false,
   },
   {
+    id: 'S-2026-0320', taskName: '车辆共享授权匹配驳回复核', priority: 'high', deadline: '2026-11-20',
+    fuliId: 'FL-2025-0015', functionName: '车辆共享授权', status: 'pending-confirm',
+    owner: '王建国', respondent: '李晓彤', source: 'manual', sourceOperator: '王建国',
+    createdAt: '2026-11-03 14:16:33', updatedAt: '2026-11-11 16:42:38',
+    matchedCount: SURVEY_TOTAL_CLAUSES, totalCount: SURVEY_TOTAL_CLAUSES, offLedger: false,
+    taskDescription: '车辆共享授权功能的数据安全合规自评待确认任务。',
+    answers: Object.fromEntries(questionCodes().map((code) => [code, 'yes' as const])),
+    returnInfo: {
+      reason: '条款 6.1.1、6.1.6 的适用性依据不足，请重新确认后提交。',
+      operator: '匹配审核员 赵敏', time: '2026-11-11 16:42:38',
+      clauseNos: ['6.1.1', '6.1.6'],
+    },
+  },
+  {
     id: 'S-2026-0303', taskName: '远程车门解锁合规评估', priority: 'urgent', deadline: '2026-10-25',
     fuliId: 'FL-2025-0001', functionName: '远程车门解锁', status: 'matching-reviewing',
     owner: '王建国', respondent: '赵敏', reviewer: '赵敏', source: 'manual', sourceOperator: '王建国',
     createdAt: '2026-03-18 10:00', updatedAt: '2026-03-30 09:48:00',
     matchedCount: 45, totalCount: SURVEY_TOTAL_CLAUSES, offLedger: false,
     taskDescription: '车型 C11 量产前须完成远程车门解锁功能的数据安全合规确认。',
-    returnInfo: { reason: '第 4、7 条目参与判定与台账子功能不一致，请核对后重新提交。', operator: '合规专员 赵敏', time: '2026-03-29 16:42' },
   },
   {
     id: 'S-2026-0311', taskName: '导航目的地同步合规评估', priority: 'low', deadline: '2026-12-15',
@@ -355,7 +404,6 @@ const seedSurveys: SurveyRecord[] = [
     owner: '赵敏', respondent: '周明', reviewer: '赵敏', source: 'manual', sourceOperator: '赵敏',
     createdAt: '2026-03-06 09:10', updatedAt: '2026-03-25 17:20:00',
     matchedCount: 51, totalCount: SURVEY_TOTAL_CLAUSES, offLedger: false,
-    returnInfo: { reason: '数据出境相关条款的判定依据不充分，请补充跨境传输评估说明。', operator: '合规专员 赵敏', time: '2026-03-24 10:18' },
   },
   {
     id: 'S-2026-0307', taskName: '行程记录数据安全自评', priority: 'low', deadline: '2026-03-31',

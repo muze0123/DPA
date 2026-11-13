@@ -17,9 +17,10 @@ import { useI18n } from 'vue-i18n';
 import { CLAUSE_GROUPS, clauseGroupTitle, ensureSurveyMatching, type ClauseGroupKey } from '../data/matching';
 import {
   approveAllPending, approveItem, approveSectionReview, ensureItemReview, itemStats, pendingReviewCount,
-  promoteItemsToReview, releaseItem, resumeFromReturn, returnSectionReview, returnSurvey, reviewGroups,
+  promoteItemsToReview, releaseItem, resumeFromReturn, returnSectionReview, reviewGroups,
   type ReviewRow,
 } from '../data/itemReview';
+import { rejectAllClauseReviews } from '../data/clauseReview';
 import { MOCK_CURRENT_USER, type SurveyRecord } from '../data/surveys';
 
 const props = defineProps<{ record: SurveyRecord }>();
@@ -267,19 +268,24 @@ function openReturn() {
   returnOpen.value = true;
 }
 
-function confirmReturn() {
+const returning = ref(false);
+async function confirmReturn() {
+  if (returning.value) return;
   if (!returnReason.value.trim()) {
     returnError.value = t('surveys.workspace.review.returnRequired');
     return;
   }
+  returning.value = true;
   try {
-    returnSurvey(props.record, returnReason.value, actorName.value);
+    await rejectAllClauseReviews(props.record.id, returnReason.value);
     returnOpen.value = false;
     bump();
     Message.success(t('surveys.workspace.review.returnSuccess'));
     emit('go-step', 3);
   } catch {
     Message.error(t('surveys.workspace.review.illegalTransition'));
+  } finally {
+    returning.value = false;
   }
 }
 
@@ -701,7 +707,7 @@ function nextStep(): number {
       <p v-if="returnError" class="sr-modal-error">{{ returnError }}</p>
       <template #footer>
         <a-button class="app-btn-neutral" @click="returnOpen = false">{{ t('surveys.actions.cancel') }}</a-button>
-        <a-button type="primary" @click="confirmReturn">{{ t('surveys.workspace.review.returnOk') }}</a-button>
+        <a-button type="primary" :loading="returning" @click="confirmReturn">{{ t('surveys.workspace.review.returnOk') }}</a-button>
       </template>
     </a-modal>
 

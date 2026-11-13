@@ -306,7 +306,7 @@ const columnSettingsOpen = ref(false);
 const localizedColumns = computed(() => columns.value.map((item) => ({ ...item, label: t(`surveys.fields.${item.key}`) })));
 const localizedDefaultColumns = computed(() => defaultColumns.map((item) => ({ ...item, label: t(`surveys.fields.${item.key}`) })));
 
-const columnWidths: Record<ColumnKey, number> = { taskNo: 130, taskName: 250, fuliId: 140, status: 170, clauses: 100, reviewer: 100, respondent: 100, source: 190, updatedAt: 160, updatedBy: 100, priority: 90, taskDescription: 260, deadline: 120, createdAt: 160 };
+const columnWidths: Record<ColumnKey, number> = { taskNo: 180, taskName: 250, fuliId: 140, status: 170, clauses: 100, reviewer: 100, respondent: 100, source: 190, updatedAt: 160, updatedBy: 100, priority: 90, taskDescription: 260, deadline: 120, createdAt: 160 };
 
 const tableColumns = computed<TableColumnData[]>(() => {
   const dataColumns = columns.value.filter((item) => item.visible).map((item): TableColumnData => ({
@@ -371,14 +371,17 @@ interface RowAction { key: RowActionKey; label: string; danger?: boolean; run: (
  * 去作答/去确认/去审批/去填写 更名为 作答/确认/审批/填写，全状态恢复「复制」——按任务字段预填新建任务抽屉）：
  * 待处理=详情/执行；待提交=详情/编辑；待填写=详情/作答；待确认=详情/确认；
  * 匹配审核中与分区审核中=详情/审批；分区填写中=详情/去填写；
- * 已退回（returnInfo 标记）=详情/修改；已完成、已撤回、已作废=详情。
+ * 匹配审批退回（待确认 + returnInfo）=详情/重新确认；分区退回=详情/修改；
+ * 已完成、已撤回、已作废=详情。
  * 全部状态第三动作 = 复制（超过主位 2 个，收进「…」更多菜单）。
  */
 function rowActions(record: SurveyRecord): RowAction[] {
   const detail: RowAction = { key: 'detail', label: t('surveys.actions.open'), run: openSurvey };
   const copy: RowAction = { key: 'copy', label: t('surveys.actions.copy'), run: openCopyTask };
-  // 已退回：阶段内退回标记优先，修改入口回到工作区（行动步随状态归一，退回横幅可见）
-  if (record.returnInfo) {
+  if (record.returnInfo && record.status === 'pending-confirm') {
+    return [detail, { key: 'confirm', label: t('surveys.actions.reconfirm'), run: (item) => openTaskStep(item, 3) }, copy];
+  }
+  if (record.returnInfo && record.status === 'section-filling') {
     return [detail, { key: 'modify', label: t('surveys.actions.modify'), run: openSurvey }, copy];
   }
   switch (record.status) {
@@ -645,25 +648,29 @@ onMounted(async () => {
         row-key="id"
         @sorter-change="handleSort"
       >
-        <!-- 任务名称 = 天枢下发的任务主标识：行内唯一入口，点击打开任务详情（归一到当前行动步）；
+        <!-- 任务名称 = 天枢下发的任务主标识：纯文本展示，不可点、不高亮；名称过长截断，hover 气泡全显完整名称；
              截止时间已过且未到终态时追加红底「已延期 n 天」标签；清单外角标并入本格 -->
         <template #taskName="{ record }">
-          <button
-            class="table-link task-name"
-            type="button"
-            :aria-label="t('surveys.actions.openNo', { no: record.taskName })"
-            @click="openSurvey(record)"
-          >
-            <span class="task-name-text">{{ record.taskName }}</span>
+          <span class="task-name-cell">
+            <a-tooltip class="task-name-tip" :content="record.taskName" :disabled="!record.taskName">
+              <span class="task-name-text">{{ record.taskName }}</span>
+            </a-tooltip>
             <a-tag v-if="record.offLedger" size="small" color="orange" class="off-ledger-tag">{{ t('surveys.labels.offLedger') }}</a-tag>
             <a-tag v-if="overdueDays(record)" size="small" color="red" class="overdue-tag">
               {{ t('surveys.labels.overdue', { days: overdueDays(record) }) }}
             </a-tag>
-          </button>
+          </span>
         </template>
-        <!-- 任务编号：系统内部唯一编号（S-YYYY-####），只读文本 -->
+        <!-- 任务编号：系统内部唯一编号（S-YYYY-####），行内可点入口，hover 高亮，点击打开任务详情（归一到当前行动步） -->
         <template #taskNo="{ record }">
-          <span class="task-no-cell">{{ record.id }}</span>
+          <button
+            class="table-link task-no"
+            type="button"
+            :aria-label="t('surveys.actions.openNo', { no: record.id })"
+            @click="openSurvey(record)"
+          >
+            <span class="task-no-text">{{ record.id }}</span>
+          </button>
         </template>
         <!-- 待处理任务功能未绑定：FuLi ID 显示 — -->
         <template #fuliId="{ record }">{{ record.fuliId || '—' }}</template>
@@ -843,13 +850,14 @@ onMounted(async () => {
 
 .table-link { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; overflow: hidden; padding: 0; border: 0; color: var(--color-text-1); background: transparent; cursor: pointer; font: inherit; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
 .table-link:hover, .table-link:focus-visible { color: var(--app-accent); }
-/* 任务名称是行内唯一可点入口：默认次级正文色，hover/focus 变主题色提示可点 */
-.task-name { color: var(--color-text-2); }
-.task-name-text { overflow: hidden; text-overflow: ellipsis; }
+/* 任务名称：纯文本，不可点、不高亮；名称过长截断，hover 气泡全显完整名称 */
+.task-name-cell { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; overflow: hidden; }
+.task-name-tip { flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.task-name-text { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 逾期标记（红底小标签）跟随任务名称展示，与天枢任务中心同构 */
 .overdue-tag { flex: none; cursor: default; }
-/* 任务编号：等宽数字、次级文本色（行内入口仍是任务名称） */
-.task-no-cell { color: var(--color-text-2); font-variant-numeric: tabular-nums; }
+/* 任务编号：行内可点入口，hover 高亮变主题色；等宽数字、次级文本色 */
+.task-no { color: var(--color-text-2); font-variant-numeric: tabular-nums; }
 
 .off-ledger-tag { flex: none; cursor: default; }
 

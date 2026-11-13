@@ -994,7 +994,7 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
                 </ul>
               </nav>
 
-              <!-- 主区：分组条款卡（分组标题条 = 主色左竖条 + 浅蓝底，对齐工作台匹配结果） -->
+              <!-- 主区：分组条款卡（分组标题条 = 主色左竖条 + 浅蓝底，对齐任务管理匹配结果） -->
               <div class="cfg-list">
                 <section
                   v-for="group in groupedTriggerRows"
@@ -1331,7 +1331,7 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
 /* 未选「标准库」来源占位（2026-11-02 用户裁决）：居中空态 */
 .cfg-rules-empty { display: flex; align-items: center; justify-content: center; padding: 48px 16px; }
 
-/* 区块式两栏 = 条目导航（吸顶） + 分组条款卡（对齐工作台匹配结果分组导航）
+/* 区块式两栏 = 条目导航（吸顶） + 分组条款卡（对齐任务管理匹配结果分组导航）
    2026-11-01 用户裁决：分割线到「条目导航」与「章级标题」的间距统一 16px */
 .cfg-columns { display: flex; align-items: stretch; gap: 16px; min-width: 0; margin-top: 16px; }
 .cfg-nav { flex: none; width: 240px; align-self: flex-start; position: sticky; top: 112px; padding: 16px; border: 1px solid var(--app-divider); border-radius: 2px; background: var(--app-surface); z-index: 1; }
@@ -1347,7 +1347,7 @@ const statusColor = (value: 'draft' | 'published') => (value === 'published' ? '
 .cfg-nav-badge { flex: none; color: var(--color-text-3); font-size: 12px; font-variant-numeric: tabular-nums; }
 .cfg-list { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 
-/* 分组标题条：主色左竖条 + 浅蓝底（工作台匹配结果同款）；首个章级标题距分割线 16px 由 .cfg-columns 统一给出 */
+/* 分组标题条：主色左竖条 + 浅蓝底（任务管理匹配结果同款）；首个章级标题距分割线 16px 由 .cfg-columns 统一给出 */
 .cfg-group-block { scroll-margin-top: 112px; }
 .cfg-group-block:first-child .cfg-group-banner { margin-top: 0; }
 .cfg-group-banner {

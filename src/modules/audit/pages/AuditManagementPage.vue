@@ -526,7 +526,7 @@ async function confirmExport() {
 .pagination-pages { display: flex; align-items: center; gap: 8px; margin-right: 8px; }
 .pagination-jump-label, .pagination-total-pages { color: var(--color-text-3); font-size: 14px; line-height: 22px; }
 
-/* DESIGN.md · Table：白底、无外框、无斑马纹、行间单线分隔（与功能台账/问卷工作台同一套处理） */
+/* DESIGN.md · Table：白底、无外框、无斑马纹、行间单线分隔（与功能台账/任务管理同一套处理） */
 .audit-page :deep(.arco-table) { border: 0; }
 .audit-page :deep(.arco-table-container) { border: 0; }
 .audit-page :deep(.arco-table-th) { height: 44px; padding: 0 12px; border-bottom: 1px solid var(--app-divider); color: var(--color-text-1); background: var(--app-table-header); font-size: 14px; font-weight: 600; line-height: 22px; white-space: nowrap; text-align: left; }

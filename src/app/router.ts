@@ -15,7 +15,13 @@ const router = createRouter({
     ...(import.meta.env.DEV ? [{ path: "/__design-system", name: "design-system-patterns", component: () => import("../design/patterns/DesignPatternsPage.vue"), meta: { layout: "product" } }] : []),
     {
       path: '/',
-      redirect: '/functions',
+      redirect: '/workbench',
+    },
+    {
+      path: '/workbench',
+      name: 'workbench',
+      component: () => import('../modules/workbench/pages/WorkbenchPage.vue'),
+      meta: { layout: 'product' },
     },
     {
       path: '/functions',
@@ -243,10 +249,10 @@ const router = createRouter({
       },
     },
     { path: '/admin/audit', redirect: '/audit' },
-    { path: '/login', redirect: '/functions' },
+    { path: '/login', redirect: '/workbench' },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/functions',
+      redirect: '/workbench',
     },
   ],
 });

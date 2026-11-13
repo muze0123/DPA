@@ -25,7 +25,7 @@ import { IconExclamationCircle } from '@arco-design/web-vue/es/icon';
 import { useI18n } from 'vue-i18n';
 import {
   CLAUSE_GROUPS,
-  adoptAutoResults, clauseGroupTitle, clauseTopic, clausesForRecord, clearClauseConfirm,
+  adoptAutoResults, canConfirmClause, clauseGroupTitle, clauseTopic, clausesForRecord, clearClauseConfirm,
   engagedItemIndex, ensureSurveyMatching, finalApplicability, isClauseDiff,
   recalculateSurveyMatching, setClauseConfirm,
   submitMatchingForReview,
@@ -37,7 +37,7 @@ import {
   approveAllClauseReviews, pendingReviewClauses, rejectAllClauseReviews, reviewClauseMatch, unreviewClauseMatch,
 } from '../data/clauseReview';
 import { itemsOfClause } from '../data/items';
-import type { ClauseConfirm, ClauseMatchReview, SurveyRecord } from '../data/surveys';
+import { approvedClauseReview, lastRejectedClauseReview, type ClauseConfirm, type ClauseMatchReview, type SurveyRecord } from '../data/surveys';
 
 const props = defineProps<{ record: SurveyRecord }>();
 const emit = defineEmits<{ (e: 'go-question', code: string): void }>();
@@ -88,6 +88,8 @@ type ClauseRow = {
   final: FinalApplicability;
   manual?: ClauseConfirm;
   review?: ClauseMatchReview;
+  rejectedReview?: ClauseMatchReview;
+  approvedFromPreviousRound: boolean;
   diff: boolean;
 };
 
@@ -99,7 +101,9 @@ const rows = computed<ClauseRow[]>(() => clauses.value.map((clause) => {
     auto: autoRaw === 'applicable' ? 'applicable' : autoRaw === 'not-hit' ? 'not-applicable' : 'undetermined',
     final: matching ? finalApplicability(matching, clause.no) : 'pending-review',
     manual: matching?.manual[clause.no],
-    review: matching?.reviews?.[clause.no],
+    review: matching?.reviews?.[clause.no] ?? approvedClauseReview(matching, clause.no),
+    rejectedReview: lastRejectedClauseReview(matching, clause.no),
+    approvedFromPreviousRound: Boolean(matching?.reviewRounds?.some((round) => round.reviews[clause.no]?.result === 'approved')),
     diff: matching ? isClauseDiff(matching, clause.no) : false,
   };
 }));
@@ -115,12 +119,14 @@ const reviewPendingCount = computed(() => pendingReviewClauses(props.record).len
 const engagedItems = computed(() => props.record.matchedCount);
 /** 分母 = 该问卷绑定规则的有效条目总数（2026-11-03：不再恒 CLAUSE_ITEM_TOTAL） */
 const engagedTotal = computed(() => props.record.totalCount);
-const unconfirmedCount = computed(() => rows.value.filter((row) => !row.manual).length);
+const unconfirmedCount = computed(() => rows.value.filter((row) => canConfirmClause(props.record, row.clause.no) && !row.manual).length);
+const returnedNos = computed(() => confirming.value ? props.record.returnInfo?.clauseNos ?? [] : []);
 
 /* ---------------------------------------------------------------- 页签过滤与分组 */
 
 type TabKey = 'all' | 'applicable' | 'not-applicable' | 'manual-yes' | 'diff' | 'verify' | 'review';
 const TAB_DEFS: readonly TabKey[] = ['all', 'applicable', 'not-applicable', 'manual-yes', 'diff', 'verify', 'review'];
+const visibleTabs = computed(() => TAB_DEFS.filter((key) => key !== 'review' || confirming.value || reviewingStage.value));
 
 const filter = ref<TabKey>('all');
 const visibleRows = computed(() => rows.value.filter((row) => {
@@ -130,7 +136,9 @@ const visibleRows = computed(() => rows.value.filter((row) => {
     case 'manual-yes': return row.manual?.value === 'applicable';
     case 'diff': return row.diff;
     case 'verify': return row.final === 'pending-review';
-    case 'review': return !row.review;
+    case 'review': return confirming.value
+      ? (returnedNos.value.length ? returnedNos.value.includes(row.clause.no) : !row.manual)
+      : !row.review;
     default: return true;
   }
 }));
@@ -143,7 +151,9 @@ function tabCount(key: TabKey): number {
     case 'manual-yes': return manualYesCount.value;
     case 'diff': return diffCount.value;
     case 'verify': return verifyCount.value;
-    case 'review': return reviewPendingCount.value;
+    case 'review': return confirming.value
+      ? (returnedNos.value.length || unconfirmedCount.value)
+      : reviewPendingCount.value;
   }
 }
 
@@ -160,6 +170,9 @@ const groups = computed(() => CLAUSE_GROUPS.map((key) => {
 }));
 /** 空分组在过滤后隐藏，但导航徽标始终按全量 38 条展示 */
 const visibleGroups = computed(() => groups.value.filter((group) => group.rows.length > 0));
+function traceReview(row: ClauseRow): ClauseMatchReview | undefined {
+  return row.review ?? row.rejectedReview;
+}
 
 function locateGroup(key: ClauseGroupKey) {
   document.getElementById(`sm-group-${key}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -265,7 +278,7 @@ function radioValue(row: ClauseRow): ClauseConfirm['value'] | undefined {
 /** 逐条款确认（BR-022/024）：判否原因必填（D5/D6）在入口层拦截；选「未确认」撤销确认 */
 async function onConfirmChange(row: ClauseRow, raw: unknown) {
   const no = row.clause.no;
-  if (!confirming.value || savingConfirms.value[no]) return;
+  if (!canConfirmClause(props.record, no) || savingConfirms.value[no]) return;
   const value = String(raw ?? '') as '' | ClauseConfirm['value'];
   localValues.value[no] = value;
   if (value === '') {
@@ -321,7 +334,7 @@ async function approveClause(row: ClauseRow) {
 }
 
 async function unreviewClause(row: ClauseRow) {
-  if (!reviewingStage.value) return;
+  if (!reviewingStage.value || row.approvedFromPreviousRound) return;
   try {
     await unreviewClauseMatch(props.record.id, row.clause.no);
     Message.info(t('surveys.workspace.matching.review.unreviewed', { no: row.clause.no }));
@@ -473,7 +486,7 @@ const recalcCount = ref(0);
       <div class="sm-toolbar-row">
         <div class="sm-tabs" role="tablist" :aria-label="t('surveys.workspace.matching.tabsLabel')">
           <button
-            v-for="key in TAB_DEFS"
+            v-for="key in visibleTabs"
             :key="key"
             type="button"
             class="sm-tab"
@@ -482,7 +495,7 @@ const recalcCount = ref(0);
             :aria-selected="filter === key ? 'true' : 'false'"
             @click="filter = key"
           >
-            {{ t(`surveys.workspace.matching.tabs.${key}`) }}({{ tabCount(key) }})
+            {{ t(`surveys.workspace.matching.tabs.${key === 'review' && confirming ? (returnedNos.length ? 'returned' : 'unconfirmed') : key}`) }}({{ tabCount(key) }})
           </button>
         </div>
         <div class="sm-toolbar-side">
@@ -499,7 +512,7 @@ const recalcCount = ref(0);
                 {{ t('surveys.workspace.matching.adoptAll') }}
               </a-button>
               <a-button type="primary" @click="submitModalOpen = true">
-                {{ t('surveys.workspace.matching.submit') }}
+                {{ t(returnedNos.length ? 'surveys.workspace.matching.resubmit' : 'surveys.workspace.matching.submit') }}
               </a-button>
             </template>
             <template v-else>
@@ -529,6 +542,13 @@ const recalcCount = ref(0);
         <span class="sm-legend-hint">{{ t('surveys.workspace.matching.legendHint') }}</span>
       </div>
     </section>
+
+    <a-alert v-if="confirming && record.returnInfo?.clauseNos?.length" type="warning" class="sm-recalc-banner">
+      {{ t('surveys.workspace.matching.reconfirmHint', { count: record.returnInfo.clauseNos.length, clauses: record.returnInfo.clauseNos.join('、') }) }}
+      <button type="button" class="sm-link sm-return-link" @click="locateProblem(record.returnInfo?.clauseNos ?? [])">
+        {{ t('surveys.workspace.matching.locateReturned') }}
+      </button>
+    </a-alert>
 
     <!-- 含待定题提示（步骤 2 补答前相关条款可能停留在待核验，BR-020） -->
     <p v-if="pendingQuestionCodes.length" class="sm-pending-tip">
@@ -598,14 +618,17 @@ const recalcCount = ref(0);
                   {{ t('surveys.workspace.matching.legend.manualNa') }}
                 </a-tag>
                 <template v-if="row.review">
-                  <a-tag v-if="row.review.result === 'approved'" size="small" color="green">
+                  <a-tag v-if="row.review.result === 'approved' && !returnedNos.length" size="small" color="green">
                     {{ t('surveys.workspace.matching.review.reviewedBadge') }}
                   </a-tag>
-                  <a-tag v-else size="small" color="red">
+                  <a-tag v-else-if="row.review.result === 'rejected'" size="small" color="red">
                     {{ t('surveys.workspace.matching.review.rejectedBadge') }}
                   </a-tag>
                 </template>
-                <a-tag v-else-if="reviewingStage" size="small" color="orange">
+                <a-tag v-if="!row.review && row.rejectedReview && (confirming || reviewingStage)" size="small" color="red">
+                  {{ t(confirming ? 'surveys.workspace.matching.review.rejectedBadge' : 'surveys.workspace.matching.review.previousRejectedBadge') }}
+                </a-tag>
+                <a-tag v-if="!row.review && reviewingStage" size="small" color="orange">
                   {{ t('surveys.workspace.matching.review.pendingBadge') }}
                 </a-tag>
                 <!-- 2026-11-02 裁决：审核通过 = 条款「已锁定」不可编辑，取消审核才解锁 -->
@@ -680,7 +703,7 @@ const recalcCount = ref(0);
                   :model-value="radioValue(row)"
                   :placeholder="t('surveys.workspace.matching.confirmUnconfirmed')"
                   allow-clear
-                  :disabled="savingConfirms[row.clause.no]"
+                  :disabled="!canConfirmClause(record, row.clause.no) || savingConfirms[row.clause.no]"
                   @change="(value: unknown) => onConfirmChange(row, value)"
                 >
                   <a-option value="applicable">{{ t('surveys.workspace.matching.confirmApplicable') }}</a-option>
@@ -690,6 +713,7 @@ const recalcCount = ref(0);
               <a-input
                 v-if="showReasonOf(row)"
                 class="sm-reason"
+                :disabled="!canConfirmClause(record, row.clause.no)"
                 :model-value="reasonOf(row)"
                 :placeholder="t('surveys.workspace.matching.confirmPlaceholder')"
                 :max-length="200"
@@ -697,7 +721,17 @@ const recalcCount = ref(0);
                 @press-enter="() => { if (radioValue(row) === 'not-applicable') onConfirmChange(row, 'not-applicable'); }"
                 @change="() => { if (radioValue(row) === 'not-applicable') onConfirmChange(row, 'not-applicable'); }"
               />
-              <span v-if="!row.manual" class="sm-confirm-hint">{{ t('surveys.workspace.matching.confirmEmptyHint') }}</span>
+              <span v-if="!row.manual && canConfirmClause(record, row.clause.no)" class="sm-confirm-hint">{{ t('surveys.workspace.matching.confirmEmptyHint') }}</span>
+              <div v-if="traceReview(row)" class="sm-review-trace">
+                <span>{{ t('surveys.workspace.matching.review.reviewerLabel') }}：{{ traceReview(row)?.by || '—' }}</span>
+                <span v-if="traceReview(row)?.result === 'approved' && traceReview(row)?.note">
+                  {{ t('surveys.workspace.matching.review.noteLabel') }}：{{ traceReview(row)?.note }}
+                </span>
+                <span v-if="traceReview(row)?.result === 'rejected'">
+                  {{ t('surveys.workspace.matching.review.returnReasonLabel') }}：{{ traceReview(row)?.note }}
+                </span>
+                <span>{{ t('surveys.workspace.matching.review.timeLabel') }}：{{ traceReview(row)?.at }}</span>
+              </div>
             </div>
 
             <!-- 页脚 · 匹配审核中：审批人通过/拒绝 + 备注 + 留痕 -->
@@ -718,7 +752,7 @@ const recalcCount = ref(0);
               />
               <label class="sm-field">
                 <span class="sm-field-label app-field-label">{{ t('surveys.workspace.matching.review.reviewerLabel') }}</span>
-                <span class="sm-field-static">{{ record.reviewer || '—' }}</span>
+                <span class="sm-field-static">{{ row.review?.by || record.reviewer || '—' }}</span>
               </label>
               <label class="sm-field sm-field-note">
                 <span class="sm-field-label app-field-label">{{ t('surveys.workspace.matching.review.noteLabel') }}</span>
@@ -741,7 +775,7 @@ const recalcCount = ref(0);
                 </a-button>
               </template>
               <template v-else-if="row.review.result === 'approved'">
-                <a-button type="text" size="small" @click="unreviewClause(row)">
+                <a-button v-if="!row.approvedFromPreviousRound" type="text" size="small" @click="unreviewClause(row)">
                   {{ t('surveys.workspace.matching.review.unreview') }}
                 </a-button>
                 <span class="sm-reviewed-at">{{ t('surveys.workspace.matching.review.reviewedAt', { time: row.review.at }) }}</span>
@@ -767,6 +801,9 @@ const recalcCount = ref(0);
                 <span v-if="row.review.note" class="sm-field-static sm-field-reason">{{ row.review.note }}</span>
                 <span class="sm-reviewed-at">{{ t('surveys.workspace.matching.review.reviewedAt', { time: row.review.at }) }}</span>
               </template>
+            </div>
+            <div v-if="!confirming && row.rejectedReview" class="sm-prior-return">
+              {{ t('surveys.workspace.matching.review.previousReturn', { by: row.rejectedReview.by || '—', time: row.rejectedReview.at, reason: row.rejectedReview.note }) }}
             </div>
           </article>
         </section>
@@ -874,11 +911,12 @@ const recalcCount = ref(0);
     <a-modal
       :visible="submitModalOpen"
       :width="456"
-      :title="t('surveys.workspace.matching.submitTitle')"
+      :title="t(returnedNos.length ? 'surveys.workspace.matching.resubmitTitle' : 'surveys.workspace.matching.submitTitle')"
       @cancel="submitModalOpen = false"
     >
-      <p>{{ t('surveys.workspace.matching.submitBody', {
+      <p>{{ t(returnedNos.length ? 'surveys.workspace.matching.resubmitBody' : 'surveys.workspace.matching.submitBody', {
         applicable: applicableCount, notApplicable: notApplicableCount, pendingReview: verifyCount,
+        count: returnedNos.length,
       }) }}</p>
       <p v-if="unconfirmedCount > 0" class="sm-submit-warn">
         {{ t('surveys.workspace.matching.submitUnconfirmed', { count: unconfirmedCount }) }}
@@ -930,6 +968,7 @@ const recalcCount = ref(0);
 .sm-pending-tip { display: flex; align-items: flex-start; gap: 6px; margin: 0; color: rgb(var(--orange-6)); font-size: 12px; line-height: 20px; }
 .sm-pending-tip svg { flex: none; margin-top: 3px; }
 .sm-recalc-banner { border-radius: 2px; }
+.sm-return-link { margin-inline-start: 8px; }
 
 /* 两栏：240px 分组导航 + 弹性条款列表 */
 .sm-columns { display: flex; align-items: stretch; gap: 16px; min-width: 0; }
@@ -1020,6 +1059,8 @@ const recalcCount = ref(0);
 .sm-note-input { width: 100%; max-width: 240px; }
 .sm-spacer { flex: 1; }
 .sm-confirm-hint { color: var(--color-text-3); font-size: 12px; }
+.sm-review-trace { display: flex; flex-wrap: wrap; gap: 6px 16px; width: 100%; color: var(--color-text-2); font-size: 12px; overflow-wrap: anywhere; }
+.sm-prior-return { color: var(--color-text-3); font-size: 12px; overflow-wrap: anywhere; }
 .sm-reviewed-at { color: var(--color-text-3); font-size: 12px; white-space: nowrap; }
 
 .sm-link { padding: 0; border: 0; background: transparent; color: var(--app-accent); font: inherit; font-size: 12px; cursor: pointer; }
