@@ -1012,7 +1012,7 @@ const i18n = createI18n({
         pagination: { navigation: '表单分页', total: '共 {count} 条数据', perPage: '{count} 条/页', pageSizeAria: '每页条数', previous: '上一页', next: '下一页', jumpTo: '跳至', totalPages: '/{count} 页' },
         messages: {
           created: '表单 {no} 已创建（待提交）', updated: '表单已保存', published: '表单已发布',
-          copied: '已复制为表单 {no}（待提交）', deleted: '表单已删除',
+          deleted: '表单已删除',
           enabled: '表单已启用', disabled: '表单已停用', storageError: '表单保存失败，请重试',
           deleteTitle: '删除表单', deleteConfirm: '确认删除表单「{name}」（{no}）？删除后不可恢复。',
           publishTitle: '发布表单', publishConfirm: '确认发布表单「{name}」（{no}）？发布后即可用于问卷填写。',
@@ -2205,7 +2205,7 @@ const i18n = createI18n({
         pagination: { navigation: 'Form pages', total: '{count} rows', perPage: '{count} per page', pageSizeAria: 'Rows per page', previous: 'Previous page', next: 'Next page', jumpTo: 'Go to', totalPages: '/{count} pages' },
         messages: {
           created: 'Form {no} created (pending submission)', updated: 'Form saved', published: 'Form published',
-          copied: 'Copied as form {no} (pending submission)', deleted: 'Form deleted',
+          deleted: 'Form deleted',
           enabled: 'Form enabled', disabled: 'Form disabled', storageError: 'Failed to save the form. Retry.',
           deleteTitle: 'Delete form', deleteConfirm: 'Delete form "{name}" ({no})? This cannot be undone.',
           publishTitle: 'Publish form', publishConfirm: 'Publish form "{name}" ({no})? It becomes available for surveys once published.',

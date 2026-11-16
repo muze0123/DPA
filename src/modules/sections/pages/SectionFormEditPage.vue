@@ -39,6 +39,7 @@ const router = useRouter();
 const OPERATOR = MOCK_CURRENT_USER.name;
 
 const isNew = computed(() => route.name === 'section-forms-new');
+const isCopy = computed(() => isNew.value && typeof route.query.from === 'string' && Boolean(route.query.from));
 
 const formNo = ref('');
 const name = ref('');
@@ -56,7 +57,7 @@ const issues = ref<Issue[]>([]);
 const invalidOpen = ref(false);
 const invalidAction = ref<'save' | 'publish'>('publish');
 
-const currentTitle = computed(() => t(`sectionForms.editor.${isNew.value ? 'newTitle' : 'editTitle'}`));
+const currentTitle = computed(() => t(`sectionForms.editor.${isCopy.value ? 'copyTitle' : isNew.value ? 'newTitle' : 'editTitle'}`));
 const dirty = computed(() => snapshot() !== original.value);
 
 function snapshot(): string {
@@ -81,6 +82,7 @@ function loadForm() {
   if (isNew.value) {
     const fromId = route.query.from ? String(route.query.from) : '';
     const source = fromId ? findForm(fromId) : undefined;
+    if (fromId && !source) { missing.value = true; markClean(); return; }
     // 编号预填自动取号，管理员可直接改写（自定义编号）
     formNo.value = nextFormNo();
     name.value = source ? `${source.name} 副本` : '';
@@ -331,10 +333,12 @@ function inputOfForm(): SectionFormInput {
     name: name.value,
     note: note.value,
     fields: fields.value.map((field) => ({
+      ...field,
       name: field.name.trim(),
       type: field.type,
       requiredness: field.requiredness,
       options: isOptionField(field) ? field.options.map((option) => option.trim()).filter(Boolean) : [],
+      drivers: field.drivers ? [...field.drivers] : undefined,
     })),
   };
 }
@@ -356,7 +360,7 @@ function commitForm(): SectionForm | null {
 
 /** 保存草稿：返回固化后的表单编号（校验不通过弹窗、写入失败返回空串） */
 async function save(): Promise<string> {
-  if (busy.value) return '';
+  if (busy.value || publishing.value) return '';
   if (!validate()) { openInvalid('save'); return ''; }
   busy.value = true;
   try {
@@ -443,7 +447,7 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm(t('sectionForms.editor.d
         <span class="form-crumb-sep" aria-hidden="true">/</span>
         <span class="form-crumb-current" aria-current="page">{{ currentTitle }}</span>
       </nav>
-      <div class="form-edit-actions">
+      <div v-if="!missing" class="form-edit-actions">
         <a-button class="app-btn-neutral" @click="cancel">{{ t('sectionForms.editor.cancel') }}</a-button>
         <a-button class="app-btn-neutral" :loading="busy" @click="save">{{ t('sectionForms.editor.save') }}</a-button>
         <a-button type="primary" :loading="publishing" @click="publish">{{ t('sectionForms.editor.publish') }}</a-button>

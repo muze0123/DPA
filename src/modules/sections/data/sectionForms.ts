@@ -437,7 +437,7 @@ function normalizeMasterFields(forms: SectionForm[]): SectionForm[] {
   return forms;
 }
 
-/** 模块内可变数据源：新建/编辑/复制/删除直接写回这里，并尝试落 localStorage */
+/** 模块内可变数据源：提交新建/编辑及删除时写回这里，并尝试落 localStorage */
 const localForms = readLocalForms();
 export const sectionForms = reactive<SectionForm[]>(
   localForms.length ? localForms : normalizeMasterFields(seedForms()),
@@ -491,7 +491,7 @@ export function setFormEnabled(id: string, enabled: boolean, operator: string): 
 /* ------------------------------------------------------------------ 写操作 */
 
 function cloneFields(fields: readonly SectionFormField[]): SectionFormField[] {
-  return fields.map((field) => ({ ...field, options: [...field.options] }));
+  return fields.map((field) => ({ ...field, options: [...field.options], drivers: field.drivers ? [...field.drivers] : undefined }));
 }
 
 /** 新建：恒为草稿；编号留空时自动取号。返回新建的表单 */
@@ -529,16 +529,6 @@ export function updateForm(id: string, input: SectionFormInput, operator: string
   form.updatedAt = nowText();
   persistSectionForms();
   return form;
-}
-
-/** 复制：以源表单内容新建一份草稿，编号自动取号 */
-export function copyForm(id: string, operator: string): SectionForm | null {
-  const source = findForm(id);
-  if (!source) return null;
-  return createForm(
-    { id: nextFormNo(), name: `${source.name} 副本`, note: source.note, fields: source.fields },
-    operator,
-  );
 }
 
 /** 发布：草稿 → 已发布（已发布重复发布为幂等操作） */

@@ -23,7 +23,7 @@ import ColumnSettingsPopover, { type ColumnSettingsItem } from '../../../shared/
 import { useTaskCenterStore } from '../../task-center/stores/taskCenter';
 import { MOCK_CURRENT_USER } from '../../surveys/data/surveys';
 import {
-  SECTION_FORM_STATUSES, copyForm, deleteForm, findForm, isFormEnabled,
+  SECTION_FORM_STATUSES, deleteForm, findForm, isFormEnabled,
   publishForm, sectionForms, setFormEnabled,
   type SectionForm, type SectionFormField, type SectionFormStatus,
 } from '../data/sectionForms';
@@ -226,10 +226,7 @@ function openEdit(form: SectionForm) {
 }
 
 function requestCopy(form: SectionForm) {
-  const created = copyForm(form.id, OPERATOR);
-  if (!created) { Message.error(t('sectionForms.messages.storageError')); return; }
-  setPage(1);
-  Message.success(t('sectionForms.messages.copied', { no: created.id }));
+  void router.push({ name: 'section-forms-new', query: { from: form.id } });
 }
 
 /** 填写记录：跳到「填写记录」二级菜单并带入表单名称，列出该表单的全部填写明细 */
