@@ -25,6 +25,7 @@ Start with `AI-DESIGN.md` and `pnpm design:context list` (or `form`, `detail`, `
 - Metritag semantic tokens govern visual values and Arco adaptation. Keep private page styles scoped and theme adaptation centralized.
 - Business pages begin with toolbar, filters or business content. Shell navigation identifies the route. Section/dialog/drawer titles remain applicable.
 - List headers, values, labels, row links and badge text use weight 400. Use semantic color and layout for hierarchy.
+- Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.
 - Keep filters and lists as sibling regions where the specified page pattern requires them. Use cards only for framed tools or repeated items.
 - Every visible control performs its action. Implement relevant loading, error, empty, no-match, disabled and recovery states. Searches, pagination and sort affect displayed data.
 - Forms preserve values after failures, prevent duplicate submits and expose validation with first-error focus/scroll. Deliberately handle close, Escape, mask, focus return and dirty-state policies for each overlay.
